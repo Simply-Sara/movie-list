@@ -27,8 +27,8 @@ function MediaList({ items, currentUser, users, onStatusUpdate }) {
 
   if (items.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-8 text-center">
-        <p className="text-gray-500">No media items yet. Add one to get started!</p>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
+        <p className="text-gray-500 dark:text-gray-400">No media items yet. Add one to get started!</p>
       </div>
     )
   }

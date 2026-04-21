@@ -51,11 +51,11 @@ function MarkWatchedModal({ isOpen, onClose, users, userStatuses, mediaId, onCon
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Mark as Watched</h2>
-          <p className="text-sm text-gray-600 mt-1">Select who watched this</p>
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-gray-900 dark:bg-opacity-70 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="p-6 border-b dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Mark as Watched</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Select who watched this</p>
         </div>
 
         <div className="p-6 overflow-y-auto flex-1">
@@ -70,26 +70,26 @@ function MarkWatchedModal({ isOpen, onClose, users, userStatuses, mediaId, onCon
                   key={user.id}
                   className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition ${
                     isSelected
-                      ? 'border-indigo-500 bg-indigo-50'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
+                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-700'
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={isSelected}
                     onChange={() => handleToggleUser(user.id)}
-                    className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                    className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900">{user.username}</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{user.username}</span>
                       {hasWantToWatch && (
-                        <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-medium rounded">
+                        <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-medium rounded dark:bg-green-800 dark:text-green-300">
                           Want to Watch
                         </span>
                       )}
                       {userStatus?.seen === 1 && (
-                        <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium rounded">
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium rounded dark:bg-blue-800 dark:text-blue-300">
                           Already Seen
                         </span>
                       )}
@@ -101,18 +101,18 @@ function MarkWatchedModal({ isOpen, onClose, users, userStatuses, mediaId, onCon
           </div>
         </div>
 
-        <div className="p-6 border-t flex gap-3">
+        <div className="p-6 border-t dark:border-gray-700 flex gap-3">
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition disabled:opacity-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
           >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
             disabled={isSubmitting || selectedUserIds.length === 0}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50 dark:focus:ring-offset-gray-800"
           >
             {isSubmitting ? 'Marking...' : `Mark Watched (${selectedUserIds.length})`}
           </button>
