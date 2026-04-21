@@ -1,0 +1,141 @@
+import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import Login from './components/Login'
+import Dashboard from './components/Dashboard'
+import Profile from './pages/Profile'
+import Register from './pages/Register'
+
+function App() {
+  const [currentUser, setCurrentUser] = useState(null)
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+    // Load users on mount
+    fetch('/api/users')
+      .then(res => res.json())
+      .then(data => setUsers(data))
+      .catch(err => console.error('Error loading users:', err))
+      
+    // Check for existing token on startup
+    const token = localStorage.getItem('token')
+    if (token) {
+      // In a real app, we would verify the token with the backend
+      // For now, we'll try to fetch profile to validate token
+      fetch('/api/users/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => {
+          if (res.ok) {
+            return res.json()
+          }
+          throw new Error('Invalid token')
+        })
+        .then(user => {
+          setCurrentUser(user)
+        })
+        .catch(() => {
+          // Invalid or expired token
+          localStorage.removeItem('token')
+        })
+    }
+  }, [])
+
+  const handleLogin = async (username, password) => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+      
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Login failed')
+      }
+      
+      const data = await res.json()
+      const token = data.token
+      
+      // Store token
+      localStorage.setItem('token', token)
+      
+      // Set current user
+      setCurrentUser(data.user)
+    } catch (err) {
+      throw err
+    }
+  }
+
+  const handleRegister = async (username, password, confirmPassword) => {
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, confirmPassword })
+      })
+      
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Registration failed')
+      }
+      
+      // Registration successful - show success message (handled in Register component)
+      return await res.json()
+    } catch (err) {
+      throw err
+    }
+  }
+
+  const handleLogout = () => {
+    setCurrentUser(null)
+    // Clear token on logout
+    localStorage.removeItem('token')
+    window.location.reload()
+  }
+
+  // Handle user updates from profile page
+  useEffect(() => {
+    const handleUserUpdated = (e) => {
+      setCurrentUser(prevUser => {
+        if (!prevUser) return prevUser
+        if (e.detail.id === prevUser.id) {
+          return { ...prevUser, username: e.detail.username }
+        }
+        return prevUser
+      })
+    }
+    
+    window.addEventListener('user-updated', handleUserUpdated)
+    return () => {
+      window.removeEventListener('user-updated', handleUserUpdated)
+    }
+  }, [])
+
+  if (!currentUser) {
+    return (
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login onLogin={handleLogin} users={users} />} />
+          <Route path="/register" element={<Register onRegister={handleRegister} />} />
+        </Routes>
+      </Router>
+    )
+  }
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate replace to="/dashboard" />} />
+        <Route path="/dashboard" element={<Dashboard currentUser={currentUser} users={users} onLogout={handleLogout} />}>
+          <Route index element={<Dashboard currentUser={currentUser} users={users} onLogout={handleLogout} />} />
+        </Route>
+        <Route path="/profile" element={<Profile currentUser={currentUser} users={users} onLogout={handleLogout} />} />
+      </Routes>
+    </Router>
+  )
+}
+
+export default App
+
