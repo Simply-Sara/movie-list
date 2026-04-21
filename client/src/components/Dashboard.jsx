@@ -3,6 +3,7 @@ import MediaList from './MediaList'
 import AddMediaForm from './AddMediaForm'
 import FilterPanel from './FilterPanel'
 import QueuePage from './QueuePage'
+import DarkModeToggle from './DarkModeToggle'
 
 function Dashboard({ currentUser, users, onLogout }) {
   const [mediaItems, setMediaItems] = useState([])
@@ -44,24 +45,25 @@ function Dashboard({ currentUser, users, onLogout }) {
   const displayItems = filteredItems !== null ? filteredItems : mediaItems
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <header className="bg-white shadow-sm border-b dark:bg-gray-800 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Movie List</h1>
-              <p className="text-sm text-gray-600">Welcome, {currentUser.username}!</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Movie List</h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Welcome, {currentUser.username}!</p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 items-center">
+              <DarkModeToggle size="md" />
               <a
                 href="/profile"
-                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition"
+                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Profile
               </a>
               <button
                 onClick={onLogout}
-                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
+                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Logout
               </button>
@@ -75,8 +77,8 @@ function Dashboard({ currentUser, users, onLogout }) {
               onClick={() => setActiveView('list')}
               className={`px-6 py-3 text-sm font-medium rounded-t-lg transition ${
                 activeView === 'list'
-                  ? 'bg-white text-indigo-600 border-t-2 border-indigo-600'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'bg-white text-indigo-600 border-t-2 border-indigo-600 dark:bg-gray-800 dark:text-indigo-400 dark:border-indigo-400'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700'
               }`}
             >
               All Media
@@ -85,8 +87,8 @@ function Dashboard({ currentUser, users, onLogout }) {
               onClick={() => setActiveView('queue')}
               className={`px-6 py-3 text-sm font-medium rounded-t-lg transition ${
                 activeView === 'queue'
-                  ? 'bg-white text-indigo-600 border-t-2 border-indigo-600'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'bg-white text-indigo-600 border-t-2 border-indigo-600 dark:bg-gray-800 dark:text-indigo-400 dark:border-indigo-400'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700'
               }`}
             >
               Queue
@@ -103,7 +105,7 @@ function Dashboard({ currentUser, users, onLogout }) {
       ) : (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-6 flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-800">
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
               {filteredItems !== null 
                 ? `Filtered Results (${filteredItems.length} items)`
                 : `All Media (${mediaItems.length} items)`
@@ -111,7 +113,7 @@ function Dashboard({ currentUser, users, onLogout }) {
             </h2>
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition dark:focus:ring-offset-gray-900"
             >
               {showAddForm ? 'Cancel' : '+ Add Media'}
             </button>
