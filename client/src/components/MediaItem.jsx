@@ -91,11 +91,11 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
 
   const getStatusBadgeColor = (status) => {
     const colors = {
-      want_to_watch: 'bg-green-100 text-green-800',
-      dont_want_to_watch: 'bg-red-100 text-red-800',
-      undecided: 'bg-yellow-100 text-yellow-800'
+      want_to_watch: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      dont_want_to_watch: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+      undecided: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
     }
-    return colors[status] || 'bg-gray-100 text-gray-800'
+    return colors[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
   }
 
   const getStatusLabel = (status) => {
@@ -117,7 +117,7 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
 
   return (
     <div 
-      className="bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+      className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
       onClick={handleCardClick}
     >
       <div className="flex flex-col md:flex-row">
@@ -135,7 +135,7 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
           <button
             onClick={handleDelete}
             disabled={isUpdating}
-            className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50 z-10"
+            className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition disabled:opacity-50 z-10"
             title="Remove this item"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,14 +146,14 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
           <div className="flex justify-between items-start mb-4 pr-8">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <h3 className="text-xl font-semibold text-gray-900">{item.title}</h3>
-                <span className="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-medium rounded">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{item.title}</h3>
+                <span className="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-medium rounded dark:bg-indigo-900 dark:text-indigo-300">
                   {getTypeLabel(item.type)}
                 </span>
               </div>
               
               {(item.release_date || item.rating) && (
-                <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
                   {item.release_date && (
                     <span>📅 {formatDate(item.release_date)}</span>
                   )}
@@ -164,7 +164,7 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
               )}
 
               {item.overview && (
-                <p className="text-sm text-gray-700 mb-4 line-clamp-3">{item.overview}</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">{item.overview}</p>
               )}
 
               <div className="flex flex-wrap gap-2 mt-3 mb-3">
@@ -172,14 +172,14 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
                   .filter(s => s.watch_status || s.seen === 1)
                   .map(status => (
                     <div key={status.user_id} className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">{status.username}:</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">{status.username}:</span>
                       {status.watch_status && (
                         <span className={`px-2 py-1 text-xs font-medium rounded ${getStatusBadgeColor(status.watch_status)}`}>
                           {getStatusLabel(status.watch_status)}
                         </span>
                       )}
                       {status.seen === 1 && (
-                        <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded dark:bg-blue-900 dark:text-blue-300">
                           Seen
                         </span>
                       )}
@@ -191,7 +191,7 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
                 <button
                   onClick={handleMarkWatchedClick}
                   disabled={isUpdating}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50"
+                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50 dark:focus:ring-offset-gray-900"
                 >
                   ✓ Mark as Watched
                   {usersWantingToWatch.length > 0 && (
@@ -202,15 +202,14 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
             </div>
           </div>
 
-          <div className="border-t pt-4 mt-4">
+          <div className="border-t pt-4 mt-4 dark:border-gray-700">
             <div className="flex flex-wrap gap-3 items-center">
-              <span className="text-sm font-medium text-gray-700">Your Status:</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Your Status:</span>
               
               <div className="flex gap-2">
                 <button
                   onClick={(e) => {
                     handleStatusButtonClick(e)
-                    // If already selected, clear it; otherwise set it
                     const newStatus = currentUserStatus?.watch_status === 'want_to_watch' ? null : 'want_to_watch'
                     updateStatus(newStatus, undefined)
                   }}
@@ -218,7 +217,7 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
                   className={`px-3 py-1 text-sm rounded transition ${
                     currentUserStatus?.watch_status === 'want_to_watch'
                       ? 'bg-green-600 text-white'
-                      : 'bg-green-100 text-green-700 hover:bg-green-200'
+                      : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
                   } disabled:opacity-50`}
                 >
                   Want to Watch
@@ -226,7 +225,6 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
                 <button
                   onClick={(e) => {
                     handleStatusButtonClick(e)
-                    // If already selected, clear it; otherwise set it
                     const newStatus = currentUserStatus?.watch_status === 'dont_want_to_watch' ? null : 'dont_want_to_watch'
                     updateStatus(newStatus, undefined)
                   }}
@@ -234,7 +232,7 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
                   className={`px-3 py-1 text-sm rounded transition ${
                     currentUserStatus?.watch_status === 'dont_want_to_watch'
                       ? 'bg-red-600 text-white'
-                      : 'bg-red-100 text-red-700 hover:bg-red-200'
+                      : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-800 dark:text-red-200 dark:hover:bg-red-700'
                   } disabled:opacity-50`}
                 >
                   Don't Want
@@ -242,7 +240,6 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
                 <button
                   onClick={(e) => {
                     handleStatusButtonClick(e)
-                    // If already selected, clear it; otherwise set it
                     const newStatus = currentUserStatus?.watch_status === 'undecided' ? null : 'undecided'
                     updateStatus(newStatus, undefined)
                   }}
@@ -250,7 +247,7 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
                   className={`px-3 py-1 text-sm rounded transition ${
                     currentUserStatus?.watch_status === 'undecided'
                       ? 'bg-yellow-600 text-white'
-                      : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                      : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-200 dark:hover:bg-yellow-700'
                   } disabled:opacity-50`}
                 >
                   Undecided
@@ -270,9 +267,9 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
                       updateStatus(undefined, e.target.checked)
                     }}
                     disabled={isUpdating}
-                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
                   />
-                  <span className="text-sm text-gray-700">Mark as Seen</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Mark as Seen</span>
                 </label>
               </div>
             </div>

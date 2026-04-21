@@ -235,11 +235,11 @@ function MediaDetailsModal({
 
   const getStatusBadgeColor = (status) => {
     const colors = {
-      want_to_watch: 'bg-green-100 text-green-800',
-      dont_want_to_watch: 'bg-red-100 text-red-800',
-      undecided: 'bg-yellow-100 text-yellow-800'
+      want_to_watch: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      dont_want_to_watch: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+      undecided: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
     }
-    return colors[status] || 'bg-gray-100 text-gray-800'
+    return colors[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
   }
 
   const getStatusLabel = (status) => {
@@ -272,7 +272,7 @@ function MediaDetailsModal({
 
         {/* Modal panel */}
         <div 
-          className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
+          className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Backdrop image header */}
@@ -298,7 +298,7 @@ function MediaDetailsModal({
           </button>
 
           {/* Content */}
-          <div className="bg-white">
+          <div className="bg-white dark:bg-gray-800">
             <div className="flex flex-col sm:flex-row">
               {/* Poster */}
               {posterUrl && (
@@ -315,13 +315,13 @@ function MediaDetailsModal({
               <div className="flex-1 p-6">
                 {isLoading && (
                   <div className="text-center py-8">
-                    <p className="text-gray-500">Loading details...</p>
+                    <p className="text-gray-500 dark:text-gray-400">Loading details...</p>
                   </div>
                 )}
 
                 {error && (
                   <div className="text-center py-8">
-                    <p className="text-red-500">{error}</p>
+                    <p className="text-red-500 dark:text-red-400">{error}</p>
                   </div>
                 )}
 
@@ -330,17 +330,17 @@ function MediaDetailsModal({
                     {/* Title and basic info */}
                     <div className="mb-4">
                       <div className="flex items-center gap-3 mb-2">
-                        <h2 className="text-3xl font-bold text-gray-900">{displayData.title}</h2>
-                        <span className="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded">
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{displayData.title}</h2>
+                        <span className="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded dark:bg-indigo-900 dark:text-indigo-300">
                           {getTypeLabel(displayData.type || mediaItem?.type)}
                         </span>
                       </div>
 
                       {displayData.tagline && (
-                        <p className="text-lg text-gray-600 italic mb-2">"{displayData.tagline}"</p>
+                        <p className="text-lg text-gray-600 dark:text-gray-400 italic mb-2">"{displayData.tagline}"</p>
                       )}
 
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                         {displayData.release_date && (
                           <span>📅 {formatDate(displayData.release_date)}</span>
                         )}
@@ -348,7 +348,7 @@ function MediaDetailsModal({
                           <span className="flex items-center gap-1">
                             ⭐ {displayData.rating.toFixed(1)}/10
                             {displayData.vote_count && (
-                              <span className="text-gray-500">({displayData.vote_count.toLocaleString()} votes)</span>
+                              <span className="text-gray-500 dark:text-gray-500">({displayData.vote_count.toLocaleString()} votes)</span>
                             )}
                           </span>
                         )}
@@ -371,7 +371,7 @@ function MediaDetailsModal({
                           {displayData.genres.map(genre => (
                             <span
                               key={genre.id}
-                              className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded"
+                              className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded dark:bg-gray-700 dark:text-gray-300"
                             >
                               {genre.name}
                             </span>
@@ -383,8 +383,8 @@ function MediaDetailsModal({
                     {/* Overview */}
                     {displayData.overview && (
                       <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Overview</h3>
-                        <p className="text-gray-700 leading-relaxed">{displayData.overview}</p>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Overview</h3>
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{displayData.overview}</p>
                       </div>
                     )}
 
@@ -392,46 +392,46 @@ function MediaDetailsModal({
                     <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                       {displayData.status && (
                         <div>
-                          <span className="font-medium text-gray-700">Status: </span>
-                          <span className="text-gray-600">{displayData.status}</span>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Status: </span>
+                          <span className="text-gray-600 dark:text-gray-400">{displayData.status}</span>
                         </div>
                       )}
                       {displayData.budget && displayData.budget > 0 && (
                         <div>
-                          <span className="font-medium text-gray-700">Budget: </span>
-                          <span className="text-gray-600">{formatCurrency(displayData.budget)}</span>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Budget: </span>
+                          <span className="text-gray-600 dark:text-gray-400">{formatCurrency(displayData.budget)}</span>
                         </div>
                       )}
                       {displayData.revenue && displayData.revenue > 0 && (
                         <div>
-                          <span className="font-medium text-gray-700">Revenue: </span>
-                          <span className="text-gray-600">{formatCurrency(displayData.revenue)}</span>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Revenue: </span>
+                          <span className="text-gray-600 dark:text-gray-400">{formatCurrency(displayData.revenue)}</span>
                         </div>
                       )}
                       {displayData.production_countries && displayData.production_countries.length > 0 && (
                         <div>
-                          <span className="font-medium text-gray-700">Country: </span>
-                          <span className="text-gray-600">
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Country: </span>
+                          <span className="text-gray-600 dark:text-gray-400">
                             {displayData.production_countries.map(c => c.name).join(', ')}
                           </span>
                         </div>
                       )}
                       {displayData.spoken_languages && displayData.spoken_languages.length > 0 && (
                         <div>
-                          <span className="font-medium text-gray-700">Languages: </span>
-                          <span className="text-gray-600">
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Languages: </span>
+                          <span className="text-gray-600 dark:text-gray-400">
                             {displayData.spoken_languages.map(l => l.name).join(', ')}
                           </span>
                         </div>
                       )}
                       {displayData.imdb_id && (
                         <div>
-                          <span className="font-medium text-gray-700">IMDb: </span>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">IMDb: </span>
                           <a
                             href={`https://www.imdb.com/title/${displayData.imdb_id}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-indigo-600 hover:text-indigo-800"
+                            className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
                           >
                             View on IMDb
                           </a>
@@ -439,12 +439,12 @@ function MediaDetailsModal({
                       )}
                       {displayData.homepage && (
                         <div>
-                          <span className="font-medium text-gray-700">Website: </span>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Website: </span>
                           <a
                             href={displayData.homepage}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-indigo-600 hover:text-indigo-800 truncate block"
+                            className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 truncate block"
                           >
                             Official Site
                           </a>
@@ -455,12 +455,12 @@ function MediaDetailsModal({
                     {/* Cast */}
                     {displayData.cast && displayData.cast.length > 0 && (
                       <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Cast</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Cast</h3>
                         <div className="flex flex-wrap gap-2">
                           {displayData.cast.map((actor, idx) => (
                             <span
                               key={idx}
-                              className="text-sm text-gray-600"
+                              className="text-sm text-gray-600 dark:text-gray-400"
                             >
                               {actor.name}
                               {idx < displayData.cast.length - 1 && ','}
@@ -473,10 +473,10 @@ function MediaDetailsModal({
                     {/* Crew */}
                     {displayData.crew && displayData.crew.length > 0 && (
                       <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Key Crew</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Key Crew</h3>
                         <div className="space-y-1">
                           {displayData.crew.map((member, idx) => (
-                            <div key={idx} className="text-sm text-gray-600">
+                            <div key={idx} className="text-sm text-gray-600 dark:text-gray-400">
                               <span className="font-medium">{member.name}</span>
                               {' - '}
                               <span>{member.job}</span>
@@ -489,12 +489,12 @@ function MediaDetailsModal({
                     {/* Production Companies */}
                     {displayData.production_companies && displayData.production_companies.length > 0 && (
                       <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Production</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Production</h3>
                         <div className="flex flex-wrap gap-2">
                           {displayData.production_companies.map(company => (
                             <span
                               key={company.id}
-                              className="text-sm text-gray-600"
+                              className="text-sm text-gray-600 dark:text-gray-400"
                             >
                               {company.name}
                             </span>
@@ -503,80 +503,77 @@ function MediaDetailsModal({
                       </div>
                     )}
 
-                    {/* User Statuses - same for both search results and existing items */}
+                    {/* User Statuses */}
                     {userStatuses.filter(s => s.watch_status || s.seen === 1).length > 0 && (
-                      <div className="mb-4 pt-4 border-t">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">User Statuses</h3>
+                      <div className="mb-4 pt-4 border-t dark:border-gray-700">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">User Statuses</h3>
                         <div className="space-y-2">
                           {userStatuses
                             .filter(s => s.watch_status || s.seen === 1)
                             .map(status => (
                               <div key={status.user_id} className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-gray-700">{status.username}:</span>
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{status.username}:</span>
                                 {status.watch_status && (
                                   <span className={`px-2 py-1 text-xs font-medium rounded ${getStatusBadgeColor(status.watch_status)}`}>
                                     {getStatusLabel(status.watch_status)}
                                   </span>
                                 )}
                                 {status.seen === 1 && (
-                                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">
+                                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded dark:bg-blue-900 dark:text-blue-300">
                                     Seen
                                   </span>
                                 )}
                               </div>
                             ))}
                         </div>
-                      </div>
+                        </div>
                     )}
                     
                     {/* Action buttons - same UI for both search results and existing items */}
-                    <div className="pt-4 border-t">
+                    <div className="pt-4 border-t dark:border-gray-700">
                       {currentUser && (
                         <div className="space-y-4">
                           <div>
-                            <span className="text-sm font-medium text-gray-700 block mb-2">Your Status:</span>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">Your Status:</span>
                             <div className="flex flex-wrap gap-2">
                               <button
                                 onClick={() => {
-                                  // If already selected, clear it; otherwise set it
                                   const newStatus = currentUserStatus?.watch_status === 'want_to_watch' ? null : 'want_to_watch'
                                   updateStatus(newStatus, undefined)
                                 }}
                                 disabled={isUpdating}
                                 className={`px-4 py-2 text-sm rounded transition ${
                                   currentUserStatus?.watch_status === 'want_to_watch'
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                    ? 'bg-green-600 text-white dark:bg-green-700'
+                                    : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-800 dark:text-green-300 dark:hover:bg-green-700'
                                 } disabled:opacity-50`}
                               >
                                 Want to Watch
                               </button>
                               <button
                                 onClick={() => {
-                                  // If already selected, clear it; otherwise set it
                                   const newStatus = currentUserStatus?.watch_status === 'dont_want_to_watch' ? null : 'dont_want_to_watch'
                                   updateStatus(newStatus, undefined)
                                 }}
                                 disabled={isUpdating}
                                 className={`px-4 py-2 text-sm rounded transition ${
                                   currentUserStatus?.watch_status === 'dont_want_to_watch'
-                                    ? 'bg-red-600 text-white'
-                                    : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                    ? 'bg-red-600 text-white dark:bg-red-700'
+                                    : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-800 dark:text-red-300 dark:hover:bg-red-700'
                                 } disabled:opacity-50`}
                               >
                                 Don't Want
                               </button>
                               <button
                                 onClick={() => {
-                                  // If already selected, clear it; otherwise set it
                                   const newStatus = currentUserStatus?.watch_status === 'undecided' ? null : 'undecided'
                                   updateStatus(newStatus, undefined)
                                 }}
                                 disabled={isUpdating}
                                 className={`px-4 py-2 text-sm rounded transition ${
                                   currentUserStatus?.watch_status === 'undecided'
-                                    ? 'bg-yellow-600 text-white'
-                                    : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                    ? 'bg-yellow-600 text-white dark:bg-yellow-700'
+                                    : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-300 dark:hover:bg-yellow-700'
                                 } disabled:opacity-50`}
                               >
                                 Undecided
@@ -591,22 +588,22 @@ function MediaDetailsModal({
                                 checked={currentUserStatus?.seen === 1}
                                 onChange={(e) => updateStatus(undefined, e.target.checked)}
                                 disabled={isUpdating}
-                                className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
                               />
-                              <span className="text-sm font-medium text-gray-700">Mark as Seen</span>
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Mark as Seen</span>
                             </label>
                           </div>
                         </div>
                       )}
                     </div>
                   </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                 )}
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
   )
 }
 
