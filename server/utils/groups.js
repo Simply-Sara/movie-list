@@ -554,7 +554,7 @@ function cancelGroupInvite(inviteId, actingUserId) {
   });
 }
 
-// Get combined media for a group (union of all members' media)
+// Get combined media for a group (union or intersection of members' media)
 function getGroupMedia(groupId, filters = {}) {
   const db = getDb();
   return new Promise((resolve, reject) => {
@@ -568,8 +568,19 @@ function getGroupMedia(groupId, filters = {}) {
           return resolve([]);
         }
 
-        const userIds = memberRows.map(r => r.user_id);
-        const placeholders = userIds.map(() => '?').join(',');
+        const allGroupMemberIds = memberRows.map(r => r.user_id);
+
+        // Determine which users to filter by: if filters.userIds provided, use those (but only if they're group members); else all members
+        let targetUserIds = allGroupMemberIds;
+        if (filters.userIds && filters.userIds.length > 0) {
+          targetUserIds = filters.userIds.filter(uid => allGroupMemberIds.includes(uid));
+        }
+
+        if (targetUserIds.length === 0) {
+          return resolve([]);
+        }
+
+        const placeholders = targetUserIds.map(() => '?').join(',');
 
         let query = `
           SELECT
@@ -594,7 +605,7 @@ function getGroupMedia(groupId, filters = {}) {
           WHERE ums.user_id IN (${placeholders})
         `;
 
-        const params = [...userIds];
+        const params = [...targetUserIds];
 
         if (filters.watchStatus) {
           query += ' AND ums.watch_status = ?';
@@ -621,6 +632,15 @@ function getGroupMedia(groupId, filters = {}) {
             query += ' AND m.genres LIKE ?';
             params.push(`%"${genre}"%`);
           });
+        }
+
+        // If specific users selected (intersection), enforce that all have status for each media item
+        if (filters.userIds && filters.userIds.length > 0) {
+          query += `
+            GROUP BY m.id
+            HAVING COUNT(DISTINCT ums.user_id) = ?
+          `;
+          params.push(targetUserIds.length);
         }
 
         query += `

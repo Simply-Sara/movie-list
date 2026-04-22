@@ -308,7 +308,8 @@ router.get('/:groupId/media', requireAuth, async (req, res) => {
       type: req.query.type || null,
       runtimeMin: req.query.runtimeMin || null,
       runtimeMax: req.query.runtimeMax || null,
-      genres: req.query.genres ? req.query.genres.split(',') : []
+      genres: req.query.genres ? req.query.genres.split(',') : [],
+      userIds: req.query.userIds ? req.query.userIds.split(',').map(Number).filter(Boolean) : []
     };
     const media = await getGroupMedia(parseInt(groupId), filters);
     res.json(media);

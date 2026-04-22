@@ -246,7 +246,11 @@ function GroupDetailPage({ currentUser, users, onLogout, pendingGroupInvitesCoun
 
         <div className="mt-6">
           {activeTab === 'media' && (
-            <GroupMediaList groupId={parseInt(groupId)} currentUser={currentUser} users={users} />
+            <GroupMediaList
+              groupId={parseInt(groupId)}
+              currentUser={currentUser}
+              groupMembers={group.members}
+            />
           )}
           {activeTab === 'members' && (
             <MemberList
