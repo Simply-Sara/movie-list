@@ -1,28 +1,35 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import MediaItem from './MediaItem'
 
 function MediaList({ items, currentUser, users, onStatusUpdate }) {
   const [statuses, setStatuses] = useState({})
+  const requestIdRef = useRef(0)
 
   useEffect(() => {
-    // Load statuses for all items
+    if (items.length === 0) return
+
     const loadStatuses = async () => {
+      const currentRequestId = ++requestIdRef.current
+
       const statusPromises = items.map(item =>
         fetch(`/api/media/${item.id}/status`)
           .then(res => res.json())
           .then(data => ({ itemId: item.id, statuses: data }))
       )
+
       const results = await Promise.all(statusPromises)
-      const statusMap = {}
-      results.forEach(({ itemId, statuses }) => {
-        statusMap[itemId] = statuses
-      })
-      setStatuses(statusMap)
+
+      // Only update state if this is the latest request
+      if (currentRequestId === requestIdRef.current) {
+        const statusMap = {}
+        results.forEach(({ itemId, statuses }) => {
+          statusMap[itemId] = statuses
+        })
+        setStatuses(statusMap)
+      }
     }
 
-    if (items.length > 0) {
-      loadStatuses()
-    }
+    loadStatuses()
   }, [items])
 
   if (items.length === 0) {

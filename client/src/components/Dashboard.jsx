@@ -26,12 +26,12 @@ function Dashboard({ currentUser, users, onLogout }) {
     loadMediaItems()
   }, [])
 
-  const loadMediaItems = () => {
+  const loadMediaItems = useCallback(() => {
     fetch('/api/media')
       .then(res => res.json())
       .then(data => setMediaItems(data))
       .catch(err => console.error('Error loading media:', err))
-  }
+  }, [])
 
   const handleFilter = useCallback(() => {
     const body = {
@@ -60,6 +60,14 @@ function Dashboard({ currentUser, users, onLogout }) {
   useEffect(() => {
     handleFilter()
   }, [handleFilter])
+
+  // Consolidated status update handler: reload media list and refresh filter if needed
+  const handleStatusUpdate = useCallback(() => {
+    loadMediaItems()
+    if (filteredItems !== null) {
+      handleFilter()
+    }
+  }, [loadMediaItems, handleFilter, filteredItems])
 
   // Individual filter setters that update state
   const setUserIds = (userIds) => {
@@ -108,12 +116,12 @@ function Dashboard({ currentUser, users, onLogout }) {
 
       {/* Main content area */}
       <div className="flex-grow">
-        {activeView === 'queue' ? (
-          <QueuePage
-            currentUser={currentUser}
-            onStatusUpdate={loadMediaItems}
-          />
-        ) : (
+         {activeView === 'queue' ? (
+           <QueuePage
+             currentUser={currentUser}
+             onStatusUpdate={handleStatusUpdate}
+           />
+         ) : (
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="mb-6 flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
@@ -163,7 +171,7 @@ function Dashboard({ currentUser, users, onLogout }) {
               items={displayItems}
               currentUser={currentUser}
               users={users}
-              onStatusUpdate={loadMediaItems}
+              onStatusUpdate={handleStatusUpdate}
             />
           </main>
         )}
