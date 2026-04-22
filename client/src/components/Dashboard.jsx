@@ -6,7 +6,7 @@ import QueuePage from './QueuePage'
 import AppHeader from './AppHeader'
 import Footer from './Footer'
 
-function Dashboard({ currentUser, users, onLogout }) {
+function Dashboard({ currentUser, users, onLogout, pendingGroupInvitesCount }) {
   const [mediaItems, setMediaItems] = useState([])
   const [filteredItems, setFilteredItems] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -112,6 +112,7 @@ function Dashboard({ currentUser, users, onLogout }) {
         activeView={activeView}
         onViewChange={setActiveView}
         showViewSwitcher
+        pendingInvitesCount={pendingGroupInvitesCount}
       />
 
       {/* Main content area */}

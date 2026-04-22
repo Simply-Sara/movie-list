@@ -83,6 +83,46 @@ function createTables() {
     )
   `);
 
+  // Groups table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS groups (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT UNIQUE NOT NULL,
+      created_by INTEGER NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Group members table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS group_members (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      group_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      role TEXT NOT NULL CHECK(role IN ('owner', 'admin', 'member')) DEFAULT 'member',
+      joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(group_id, user_id),
+      FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Group invites table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS group_invites (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      group_id INTEGER NOT NULL,
+      invited_by INTEGER NOT NULL,
+      invited_user_id INTEGER NOT NULL,
+      status TEXT NOT NULL CHECK(status IN ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE,
+      FOREIGN KEY (invited_by) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (invited_user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
   // Media items table
   db.run(`
     CREATE TABLE IF NOT EXISTS media_items (
@@ -178,14 +218,30 @@ function createTables() {
      db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_friend_id ON friendships(friend_id)`, () => {});
      db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)`, () => {});
 
-     // Indexes for media_items table
-     db.run(`CREATE INDEX IF NOT EXISTS idx_media_items_type ON media_items(type)`, () => {});
-     db.run(`CREATE INDEX IF NOT EXISTS idx_media_items_runtime ON media_items(runtime)`, () => {});
+      // Indexes for groups table
+      db.run(`CREATE INDEX IF NOT EXISTS idx_groups_created_by ON groups(created_by)`, () => {});
 
-     // Indexes for user_media_status table
-     db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_user_id ON user_media_status(user_id)`, () => {});
-     db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_media_id ON user_media_status(media_id)`, () => {});
-     db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_watch_status ON user_media_status(watch_status)`, () => {});
+      // Indexes for group_members table
+      db.run(`CREATE INDEX IF NOT EXISTS idx_group_members_group_id ON group_members(group_id)`, () => {});
+      db.run(`CREATE INDEX IF NOT EXISTS idx_group_members_user_id ON group_members(user_id)`, () => {});
+      db.run(`CREATE INDEX IF NOT EXISTS idx_group_members_role ON group_members(role)`, () => {});
+
+      // Indexes for group_invites table
+      db.run(`CREATE INDEX IF NOT EXISTS idx_group_invites_group_id ON group_invites(group_id)`, () => {});
+      db.run(`CREATE INDEX IF NOT EXISTS idx_group_invites_invited_user_id ON group_invites(invited_user_id)`, () => {});
+      db.run(`CREATE INDEX IF NOT EXISTS idx_group_invites_status ON group_invites(status)`, () => {});
+      db.run(`CREATE INDEX IF NOT EXISTS idx_group_invites_invited_by ON group_invites(invited_by)`, () => {});
+      // Unique partial index to prevent duplicate pending invites per user per group
+      db.run(`CREATE UNIQUE INDEX IF NOT EXISTS idx_group_invites_pending_unique ON group_invites(group_id, invited_user_id) WHERE status = 'pending'`, () => {});
+
+      // Indexes for media_items table
+      db.run(`CREATE INDEX IF NOT EXISTS idx_media_items_type ON media_items(type)`, () => {});
+      db.run(`CREATE INDEX IF NOT EXISTS idx_media_items_runtime ON media_items(runtime)`, () => {});
+
+      // Indexes for user_media_status table
+      db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_user_id ON user_media_status(user_id)`, () => {});
+      db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_media_id ON user_media_status(media_id)`, () => {});
+      db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_watch_status ON user_media_status(watch_status)`, () => {});
   }
 
 function ensureCaseInsensitiveUsernameUniqueness(callback) {

@@ -6,7 +6,7 @@ import AppHeader from '../components/AppHeader';
 import Footer from '../components/Footer';
 import { formatWatchTime } from '../utils/format';
 
-function PublicProfile({ currentUser, users, onLogout }) {
+function PublicProfile({ currentUser, users, onLogout, pendingGroupInvitesCount }) {
   const { username } = useParams();
   const navigate = useNavigate();
 
@@ -115,11 +115,12 @@ function PublicProfile({ currentUser, users, onLogout }) {
         onLogout={onLogout}
         activeView={null}
         showViewSwitcher
+        pendingInvitesCount={pendingGroupInvitesCount}
         onViewChange={(view) => {
           if (view === 'list') {
-            navigate('/dashboard');
+            navigate(`/users/${profile.username}`);
           } else if (view === 'queue') {
-            navigate('/dashboard?view=queue');
+            navigate(`/users/${profile.username}?view=queue`);
           }
         }}
       />

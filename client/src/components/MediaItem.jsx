@@ -17,31 +17,51 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
       .catch(err => console.error('Error loading TMDB config:', err))
   }, [])
 
-   const updateStatus = (watchStatus, seen) => {
-     if (!currentUser) return
-     setIsUpdating(true)
-     // Handle null watchStatus (clearing status) - use !== undefined to allow null
-     const statusToSet = watchStatus !== undefined ? watchStatus : (currentUserStatus?.watch_status || null)
-     const seenToSet = seen !== undefined ? (seen ? 1 : 0) : (currentUserStatus?.seen || 0)
+  const updateStatus = (watchStatus, seen) => {
+    if (!currentUser) return
+    setIsUpdating(true)
+    // Handle null watchStatus (clearing status) - use !== undefined to allow null
+    const statusToSet = watchStatus !== undefined ? watchStatus : (currentUserStatus?.watch_status || null)
+    const seenToSet = seen !== undefined ? (seen ? 1 : 0) : (currentUserStatus?.seen || 0)
 
-     fetch(`/api/media/${item.id}/status`, {
-       method: 'POST',
-       headers: {
-         'Content-Type': 'application/json',
-         'Authorization': `Bearer ${localStorage.getItem('token')}`
-       },
-       body: JSON.stringify({
-         userId: currentUser.id,
-         watchStatus: statusToSet, // Can be null to clear status
-         seen: seenToSet
-       })
-     })
+    fetch(`/api/media/${item.id}/status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        userId: currentUser.id,
+        watchStatus: statusToSet,
+        seen: seenToSet
+      })
+    })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(errData => {
+            const error = new Error(errData.error || `Request failed with status ${res.status}`)
+            error.status = res.status
+            throw error
+          }).catch(() => {
+            const error = new Error(`Request failed with status ${res.status}`)
+            error.status = res.status
+            throw error
+          })
+        }
+        return res.json()
+      })
       .then(() => {
         onStatusUpdate()
       })
       .catch(err => {
         console.error('Error updating status:', err)
-        alert('Failed to update status')
+        if (err.status === 401) {
+          // Token invalid or missing – clear and redirect to login
+          localStorage.removeItem('token')
+          window.location.href = '/'
+        } else {
+          alert('Failed to update status')
+        }
       })
       .finally(() => setIsUpdating(false))
   }
