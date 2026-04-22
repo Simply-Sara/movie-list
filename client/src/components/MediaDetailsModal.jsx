@@ -19,6 +19,8 @@ function MediaDetailsModal({
   const [error, setError] = useState(null)
   const [userStatuses, setUserStatuses] = useState(initialUserStatuses)
   const [existingItemId, setExistingItemId] = useState(propExistingItemId)
+  const [selectedVideo, setSelectedVideo] = useState(null)
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
 
   const currentUserStatus = userStatuses.find(s => s.user_id === currentUser?.id)
   const itemExists = existingItemId !== null || (mediaItem?.id && !isSearchResult)
@@ -32,6 +34,17 @@ function MediaDetailsModal({
   useEffect(() => {
     setExistingItemId(propExistingItemId)
   }, [propExistingItemId])
+
+  // Handle escape key for video modal
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isVideoModalOpen) {
+        setIsVideoModalOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [isVideoModalOpen])
 
   useEffect(() => {
     if (isOpen && mediaItem) {
@@ -301,16 +314,36 @@ function MediaDetailsModal({
           {/* Content */}
           <div className="bg-white dark:bg-gray-800">
             <div className="flex flex-col sm:flex-row">
-              {/* Poster */}
-              {posterUrl && (
-                <div className="flex-shrink-0 sm:w-64">
-                  <img
-                    src={posterUrl}
-                    alt={displayData?.title}
-                    className="w-full h-auto object-cover"
-                  />
-                </div>
-              )}
+           {/* Poster */}
+               {posterUrl && (
+                 <div className="flex-shrink-0 sm:w-64">
+                   <img
+                     src={posterUrl}
+                     alt={displayData?.title}
+                     className="w-full h-auto object-cover"
+                   />
+                   {/* Video trailer buttons under poster */}
+                   {details?.videos?.length > 0 && (
+                     <div className="p-3 space-y-2">
+                       {details.videos.map((video, idx) => (
+                         <button
+                           key={video.id || idx}
+                           onClick={() => {
+                             setSelectedVideo(video)
+                             setIsVideoModalOpen(true)
+                           }}
+                           className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded transition"
+                         >
+                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                             <path d="M4 4l12 6-12 6z" />
+                           </svg>
+                           {video.name || 'Trailer'}
+                         </button>
+                       ))}
+                     </div>
+                   )}
+                 </div>
+               )}
 
               {/* Details */}
               <div className="flex-1 p-6">
@@ -602,9 +635,51 @@ function MediaDetailsModal({
                </div>
              </div>
            </div>
-         </div>
-       </div>
-     </div>
+        </div>
+      </div>
+
+      {/* Video Player Modal */}
+      {isVideoModalOpen && selectedVideo && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setIsVideoModalOpen(false)}
+        >
+          <div 
+            className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-2xl max-w-4xl w-full relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setIsVideoModalOpen(false)}
+              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition"
+              aria-label="Close video player"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            {/* Video iframe */}
+            <div className="aspect-video">
+              <iframe
+                src={`https://www.youtube.com/embed/${selectedVideo.key}?autoplay=1&rel=0`}
+                title={selectedVideo.name || 'Video playback'}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
+            
+            {/* Video title */}
+            <div className="p-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {selectedVideo.name || 'Trailer'}
+              </h3>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 

@@ -61,6 +61,7 @@ app.use(helmet({
       imgSrc: ["'self'", "data:", "https://image.tmdb.org"],
       connectSrc: ["'self'", "https://api.themoviedb.org"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      frameSrc: ["'self'", "https://www.youtube.com", "https://www.youtube-nocookie.com"],
       frameAncestors: ["'none'"] // Prevent clickjacking
     }
   },
