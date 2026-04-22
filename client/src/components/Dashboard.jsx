@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import MediaList from './MediaList'
 import AddMediaForm from './AddMediaForm'
 import FilterPanel from './FilterPanel'
@@ -7,10 +8,23 @@ import AppHeader from './AppHeader'
 import Footer from './Footer'
 
 function Dashboard({ currentUser, users, onLogout, pendingGroupInvitesCount }) {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [mediaItems, setMediaItems] = useState([])
   const [filteredItems, setFilteredItems] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
-  const [activeView, setActiveView] = useState('list')
+  const [activeView, setActiveView] = useState(() => {
+    const view = searchParams.get('view')
+    return view === 'queue' ? 'queue' : 'list'
+  })
+
+  // Sync URL when activeView changes
+  useEffect(() => {
+    if (activeView === 'queue') {
+      setSearchParams({ view: 'queue' })
+    } else {
+      setSearchParams({})
+    }
+  }, [activeView, setSearchParams])
 
   // Consolidated filter state
   const [filters, setFilters] = useState({

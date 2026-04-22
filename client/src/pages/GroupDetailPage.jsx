@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import GroupMediaList from '../components/GroupMediaList';
 import MemberList from '../components/MemberList';
 import GroupInviteManager from '../components/GroupInviteManager';
+import Tabs from '../components/Tabs';
 
 function GroupDetailPage({ currentUser, users, onLogout, pendingGroupInvitesCount }) {
   const { groupId } = useParams();
@@ -15,6 +16,14 @@ function GroupDetailPage({ currentUser, users, onLogout, pendingGroupInvitesCoun
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('media'); // 'media' | 'members' | 'invites'
   const [successMessage, setSuccessMessage] = useState('');
+
+  const handleViewChange = (view) => {
+    if (view === 'list') {
+      navigate('/dashboard');
+    } else if (view === 'queue') {
+      navigate('/dashboard?view=queue');
+    }
+  };
 
   const isOwner = group?.currentUserRole === 'owner';
   const isAdmin = group?.currentUserRole === 'admin' || isOwner;
@@ -124,7 +133,14 @@ function GroupDetailPage({ currentUser, users, onLogout, pendingGroupInvitesCoun
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-        <AppHeader currentUser={currentUser} onLogout={onLogout} pendingInvitesCount={pendingGroupInvitesCount} />
+        <AppHeader
+          currentUser={currentUser}
+          onLogout={onLogout}
+          activeView={null}
+          showViewSwitcher
+          onViewChange={handleViewChange}
+          pendingInvitesCount={pendingGroupInvitesCount}
+        />
         <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64"></div>
@@ -139,7 +155,14 @@ function GroupDetailPage({ currentUser, users, onLogout, pendingGroupInvitesCoun
   if (error && !group) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-        <AppHeader currentUser={currentUser} onLogout={onLogout} pendingInvitesCount={pendingGroupInvitesCount} />
+        <AppHeader
+          currentUser={currentUser}
+          onLogout={onLogout}
+          activeView={null}
+          showViewSwitcher
+          onViewChange={handleViewChange}
+          pendingInvitesCount={pendingGroupInvitesCount}
+        />
         <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
             <p className="text-red-600 dark:text-red-400">{error}</p>
@@ -155,7 +178,14 @@ function GroupDetailPage({ currentUser, users, onLogout, pendingGroupInvitesCoun
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      <AppHeader currentUser={currentUser} onLogout={onLogout} pendingInvitesCount={pendingGroupInvitesCount} />
+      <AppHeader
+        currentUser={currentUser}
+        onLogout={onLogout}
+        activeView={null}
+        showViewSwitcher
+        onViewChange={handleViewChange}
+        pendingInvitesCount={pendingGroupInvitesCount}
+      />
 
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {/* Group Header */}
@@ -214,21 +244,11 @@ function GroupDetailPage({ currentUser, users, onLogout, pendingGroupInvitesCoun
 
         {/* Tabs */}
         <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
-          <nav className="flex space-x-8">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`py-3 px-1 border-b-2 font-medium text-sm transition ${
-                  activeTab === tab.id
-                    ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </nav>
+          <Tabs
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
         </div>
 
         {/* Tab Content */}

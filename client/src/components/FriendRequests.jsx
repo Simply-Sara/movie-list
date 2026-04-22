@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Tabs from './Tabs';
 
 function FriendRequests({ incomingRequests, outgoingRequests, onAccept, onReject, onCancel, loading }) {
   const [activeTab, setActiveTab] = useState('incoming');
@@ -6,32 +7,20 @@ function FriendRequests({ incomingRequests, outgoingRequests, onAccept, onReject
   const incomingCount = incomingRequests.length;
   const outgoingCount = outgoingRequests.length;
 
+  const tabs = [
+    { id: 'incoming', label: 'Incoming', count: incomingCount },
+    { id: 'outgoing', label: 'Outgoing', count: outgoingCount }
+  ];
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow border dark:border-gray-700 overflow-hidden">
       {/* Tabs */}
       <div className="border-b border-gray-200 dark:border-gray-700">
-        <nav className="flex">
-          <button
-            onClick={() => setActiveTab('incoming')}
-            className={`flex-1 px-4 py-3 text-sm font-medium border-b-2 transition ${
-              activeTab === 'incoming'
-                ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
-                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
-            }`}
-          >
-            Incoming ({incomingCount})
-          </button>
-          <button
-            onClick={() => setActiveTab('outgoing')}
-            className={`flex-1 px-4 py-3 text-sm font-medium border-b-2 transition ${
-              activeTab === 'outgoing'
-                ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
-                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
-            }`}
-          >
-            Outgoing ({outgoingCount})
-          </button>
-        </nav>
+        <Tabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
       </div>
 
       {/* Content */}

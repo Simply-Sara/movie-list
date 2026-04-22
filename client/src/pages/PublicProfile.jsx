@@ -5,6 +5,7 @@ import SettingsPopup from '../components/SettingsPopup';
 import AppHeader from '../components/AppHeader';
 import Footer from '../components/Footer';
 import { formatWatchTime } from '../utils/format';
+import Tabs from '../components/Tabs';
 
 function PublicProfile({ currentUser, users, onLogout, pendingGroupInvitesCount }) {
   const { username } = useParams();
@@ -110,20 +111,20 @@ function PublicProfile({ currentUser, users, onLogout, pendingGroupInvitesCount 
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      <AppHeader
-        currentUser={currentUser}
-        onLogout={onLogout}
-        activeView={null}
-        showViewSwitcher
-        pendingInvitesCount={pendingGroupInvitesCount}
-        onViewChange={(view) => {
-          if (view === 'list') {
-            navigate(`/users/${profile.username}`);
-          } else if (view === 'queue') {
-            navigate(`/users/${profile.username}?view=queue`);
-          }
-        }}
-      />
+       <AppHeader
+         currentUser={currentUser}
+         onLogout={onLogout}
+         activeView={null}
+         showViewSwitcher
+         pendingInvitesCount={pendingGroupInvitesCount}
+         onViewChange={(view) => {
+           if (view === 'list') {
+             navigate('/dashboard');
+           } else if (view === 'queue') {
+             navigate('/dashboard?view=queue');
+           }
+         }}
+       />
 
       {/* Main content area */}
       <div className="flex-grow">
@@ -189,27 +190,23 @@ function PublicProfile({ currentUser, users, onLogout, pendingGroupInvitesCount 
             </div>
           </div>
 
-          {/* Media section with filter tabs */}
-          <div>
-            <div className="mb-6">
-              <div className="border-b border-gray-200 dark:border-gray-700">
-                <nav className="flex gap-4" aria-label="Media filters">
-                  {['all', 'watched', 'want_to_watch', 'undecided'].map((filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => setMediaFilter(filter)}
-                      className={`py-3 px-1 text-sm font-medium border-b-2 transition ${
-                        mediaFilter === filter
-                          ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
-                          : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
-                      }`}
-                    >
-                      {filter === 'all' ? 'All' : filter === 'watched' ? 'Watched' : filter === 'want_to_watch' ? 'Want to Watch' : 'Undecided'}
-                    </button>
-                  ))}
-                </nav>
-              </div>
-            </div>
+           {/* Media section with filter tabs */}
+           <div>
+             <div className="mb-6">
+               <div className="border-b border-gray-200 dark:border-gray-700">
+                 <Tabs
+                   tabs={[
+                     { id: 'all', label: 'All' },
+                     { id: 'watched', label: 'Watched' },
+                     { id: 'want_to_watch', label: 'Want to Watch' },
+                     { id: 'undecided', label: 'Undecided' }
+                   ]}
+                   activeTab={mediaFilter}
+                   onTabChange={setMediaFilter}
+                   ariaLabel="Media filters"
+                 />
+               </div>
+             </div>
 
             {/* Media grid */}
             {filteredMedia.length === 0 ? (

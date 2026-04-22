@@ -16,6 +16,14 @@ function GroupsPage({ currentUser, onLogout, pendingGroupInvitesCount }) {
   const [successMessage, setSuccessMessage] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  const handleViewChange = (view) => {
+    if (view === 'list') {
+      navigate('/dashboard');
+    } else if (view === 'queue') {
+      navigate('/dashboard?view=queue');
+    }
+  };
+
   useEffect(() => {
     if (!currentUser) {
       navigate('/');
@@ -155,6 +163,7 @@ function GroupsPage({ currentUser, onLogout, pendingGroupInvitesCount }) {
         onLogout={onLogout}
         activeView={null}
         showViewSwitcher
+        onViewChange={handleViewChange}
         pendingInvitesCount={pendingGroupInvitesCount}
       />
 
