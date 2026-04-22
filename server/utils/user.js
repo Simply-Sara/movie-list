@@ -76,7 +76,7 @@ async function updateUserPassword(userId, hashedPassword, salt) {
 async function getAllUsers() {
   const db = dbModule.getDb();
   return new Promise((resolve, reject) => {
-    db.all('SELECT id, username FROM users ORDER BY username', [], (err, rows) => {
+    db.all('SELECT id, username, about_me, avatar_url FROM users ORDER BY username', [], (err, rows) => {
       if (err) return reject(err);
       resolve(rows);
     });

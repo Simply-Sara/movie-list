@@ -48,6 +48,12 @@ function AppHeader({ currentUser, onLogout, activeView, onViewChange, showViewSw
             {currentUser ? (
               <>
                 <Link
+                  to="/friends"
+                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
+                >
+                  Friends
+                </Link>
+                <Link
                   to={`/users/${currentUser.username}`}
                   className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
                 >

@@ -143,18 +143,36 @@ function createTables() {
      if (err && !err.message.includes('duplicate column')) console.error('Error adding runtime:', err.message);
    });
 
-   // Create user_username_history table for audit tracking
-   db.run(`
-     CREATE TABLE IF NOT EXISTS user_username_history (
-       id INTEGER PRIMARY KEY AUTOINCREMENT,
-       user_id INTEGER NOT NULL,
-       old_username TEXT NOT NULL,
-       changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-     )
-   `);
-   db.run(`CREATE INDEX IF NOT EXISTS idx_user_username_history_user_id ON user_username_history(user_id)`, () => {});
- }
+    // Create user_username_history table for audit tracking
+    db.run(`
+      CREATE TABLE IF NOT EXISTS user_username_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        old_username TEXT NOT NULL,
+        changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_user_username_history_user_id ON user_username_history(user_id)`, () => {});
+
+    // Create friendships table for friend relationships
+    db.run(`
+      CREATE TABLE IF NOT EXISTS friendships (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        friend_id INTEGER NOT NULL,
+        status TEXT NOT NULL CHECK(status IN ('pending', 'accepted', 'blocked', 'rejected')),
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, friend_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_user_id ON friendships(user_id)`, () => {});
+    db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_friend_id ON friendships(friend_id)`, () => {});
+    db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)`, () => {});
+  }
 
 function ensureCaseInsensitiveUsernameUniqueness(callback) {
   // Check for existing case-insensitive duplicates

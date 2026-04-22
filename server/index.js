@@ -128,9 +128,13 @@ initDatabase((err) => {
   const authRoutes = require('./routes/auth');
   app.use('/api/auth', authRoutes);
 
-  // Users routes
-  const usersRoutes = require('./routes/users');
-  app.use('/api/users', usersRoutes);
+   // Users routes
+   const usersRoutes = require('./routes/users');
+   app.use('/api/users', usersRoutes);
+
+   // Friends routes
+   const friendsRoutes = require('./routes/friends');
+   app.use('/api/friends', requireAuth, friendsRoutes);
 
   // Direct user creation endpoint (kept here for backward compatibility)
   const { findUserByUsername } = require('./utils/user');

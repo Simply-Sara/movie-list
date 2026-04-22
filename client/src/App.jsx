@@ -4,6 +4,7 @@ import Login from './components/Login'
 import Dashboard from './components/Dashboard'
 import PublicProfile from './pages/PublicProfile'
 import Register from './pages/Register'
+import FriendsPage from './pages/FriendsPage'
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null)
@@ -118,6 +119,7 @@ function App() {
       <Routes>
         <Route path="/" element={currentUser ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} users={users} />} />
         <Route path="/register" element={<Register onRegister={handleRegister} />} />
+        <Route path="/friends" element={currentUser ? <FriendsPage currentUser={currentUser} onLogout={handleLogout} /> : <Navigate to="/" replace />} />
         <Route path="/users/:username" element={<PublicProfile currentUser={currentUser} users={users} onLogout={handleLogout} />} />
         <Route path="/dashboard" element={currentUser ? <Dashboard currentUser={currentUser} users={users} onLogout={handleLogout} /> : <Navigate to="/" replace />} />
         <Route path="/profile" element={currentUser ? <Navigate to={`/users/${currentUser.username}`} replace /> : <Navigate to="/" replace />} />
