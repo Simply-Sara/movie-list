@@ -138,10 +138,15 @@ function createTables() {
      if (err && !err.message.includes('duplicate column')) console.error('Error adding avatar_url:', err.message);
    });
 
-   // Add runtime column to media_items table
-   db.run(`ALTER TABLE media_items ADD COLUMN runtime INTEGER`, (err) => {
-     if (err && !err.message.includes('duplicate column')) console.error('Error adding runtime:', err.message);
-   });
+    // Add runtime column to media_items table
+    db.run(`ALTER TABLE media_items ADD COLUMN runtime INTEGER`, (err) => {
+      if (err && !err.message.includes('duplicate column')) console.error('Error adding runtime:', err.message);
+    });
+
+    // Add genres column to media_items table (JSON array of genre objects)
+    db.run(`ALTER TABLE media_items ADD COLUMN genres TEXT`, (err) => {
+      if (err && !err.message.includes('duplicate column')) console.error('Error adding genres:', err.message);
+    });
 
     // Create user_username_history table for audit tracking
     db.run(`
@@ -169,9 +174,18 @@ function createTables() {
         FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_user_id ON friendships(user_id)`, () => {});
-    db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_friend_id ON friendships(friend_id)`, () => {});
-    db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)`, () => {});
+     db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_user_id ON friendships(user_id)`, () => {});
+     db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_friend_id ON friendships(friend_id)`, () => {});
+     db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)`, () => {});
+
+     // Indexes for media_items table
+     db.run(`CREATE INDEX IF NOT EXISTS idx_media_items_type ON media_items(type)`, () => {});
+     db.run(`CREATE INDEX IF NOT EXISTS idx_media_items_runtime ON media_items(runtime)`, () => {});
+
+     // Indexes for user_media_status table
+     db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_user_id ON user_media_status(user_id)`, () => {});
+     db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_media_id ON user_media_status(media_id)`, () => {});
+     db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_watch_status ON user_media_status(watch_status)`, () => {});
   }
 
 function ensureCaseInsensitiveUsernameUniqueness(callback) {

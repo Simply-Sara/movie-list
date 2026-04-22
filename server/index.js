@@ -224,135 +224,157 @@ initDatabase((err) => {
     }
   });
 
-  // Media item routes
-  app.get('/api/media', (req, res) => {
-    const db = getDb();
-    db.all(`
-      SELECT
-        m.id,
-        m.title,
-        m.type,
-        m.tmdb_id,
-        m.tmdb_type,
-        m.poster_path,
-        m.release_date,
-        m.overview,
-        m.rating,
-        m.runtime,
-        m.created_at
-      FROM media_items m
-      INNER JOIN user_media_status ums ON m.id = ums.media_id
-      WHERE ums.watch_status IS NOT NULL OR ums.seen = 1
-      GROUP BY m.id
-      ORDER BY m.created_at DESC
-    `, (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      res.json(rows);
+   // Media item routes
+   app.get('/api/media', (req, res) => {
+     const db = getDb();
+     db.all(`
+       SELECT
+         m.id,
+         m.title,
+         m.type,
+         m.tmdb_id,
+         m.tmdb_type,
+         m.poster_path,
+         m.release_date,
+         m.overview,
+         m.rating,
+         m.runtime,
+         m.genres,
+         m.created_at
+       FROM media_items m
+       INNER JOIN user_media_status ums ON m.id = ums.media_id
+       WHERE ums.watch_status IS NOT NULL OR ums.seen = 1
+       GROUP BY m.id
+       ORDER BY m.created_at DESC
+     `, (err, rows) => {
+       if (err) {
+         return res.status(500).json({ error: err.message });
+       }
+       // Parse genres JSON for each row
+       const parsedRows = rows.map(row => ({
+         ...row,
+         genres: row.genres ? JSON.parse(row.genres) : []
+        }));
+        res.json(parsedRows);
+      });
     });
-  });
 
-  // Check if media exists by TMDB ID
-  app.get('/api/media/by-tmdb', (req, res) => {
-    const { tmdb_id, tmdb_type } = req.query;
+    // Check if media exists by TMDB ID
+   app.get('/api/media/by-tmdb', (req, res) => {
+     const { tmdb_id, tmdb_type } = req.query;
 
-    if (!tmdb_id || !tmdb_type) {
-      return res.status(400).json({ error: 'tmdb_id and tmdb_type are required' });
-    }
+     if (!tmdb_id || !tmdb_type) {
+       return res.status(400).json({ error: 'tmdb_id and tmdb_type are required' });
+     }
 
-    const db = getDb();
-    db.get(
-      `SELECT * FROM media_items WHERE tmdb_id = ? AND tmdb_type = ?`,
-      [tmdb_id, tmdb_type],
-      (err, row) => {
-        if (err) {
-          return res.status(500).json({ error: err.message });
-        }
-        if (row) {
-          db.all(`
-            SELECT
-              ums.user_id,
-              u.username,
-              ums.watch_status,
-              ums.seen
-            FROM user_media_status ums
-            JOIN users u ON ums.user_id = u.id
-            WHERE ums.media_id = ?
-              AND (ums.watch_status IS NOT NULL OR ums.seen = 1)
-          `, [row.id], (statusErr, statuses) => {
-            if (statusErr) {
-              return res.status(500).json({ error: statusErr.message });
-            }
-            res.json({ ...row, userStatuses: statuses || [] });
-          });
-        } else {
-          res.json(null);
-        }
-      }
-    );
-  });
+     const db = getDb();
+     db.get(
+       `SELECT * FROM media_items WHERE tmdb_id = ? AND tmdb_type = ?`,
+       [tmdb_id, tmdb_type],
+       (err, row) => {
+         if (err) {
+           return res.status(500).json({ error: err.message });
+         }
+         if (row) {
+           db.all(`
+             SELECT
+               ums.user_id,
+               u.username,
+               ums.watch_status,
+               ums.seen
+             FROM user_media_status ums
+             JOIN users u ON ums.user_id = u.id
+             WHERE ums.media_id = ?
+               AND (ums.watch_status IS NOT NULL OR ums.seen = 1)
+           `, [row.id], (statusErr, statuses) => {
+             if (statusErr) {
+               return res.status(500).json({ error: statusErr.message });
+             }
+             res.json({
+               ...row,
+               genres: row.genres ? JSON.parse(row.genres) : [],
+               userStatuses: statuses || []
+             });
+           });
+         } else {
+           res.json(null);
+         }
+       }
+     );
+   });
 
-  app.post('/api/media', (req, res) => {
-    const { title, type, tmdb_id, tmdb_type, poster_path, release_date, overview, rating, runtime } = req.body;
-    if (!title || title.trim() === '') {
-      return res.status(400).json({ error: 'Title is required' });
-    }
-    if (!['movie', 'tv_show', 'anime'].includes(type)) {
-      return res.status(400).json({ error: 'Type must be movie, tv_show, or anime' });
-    }
+   app.post('/api/media', (req, res) => {
+     const { title, type, tmdb_id, tmdb_type, poster_path, release_date, overview, rating, runtime, genres } = req.body;
+     if (!title || title.trim() === '') {
+       return res.status(400).json({ error: 'Title is required' });
+     }
+     if (!['movie', 'tv_show', 'anime'].includes(type)) {
+       return res.status(400).json({ error: 'Type must be movie, tv_show, or anime' });
+     }
 
-    const db = getDb();
+     const db = getDb();
 
-    if (tmdb_id && tmdb_type) {
-      db.get(
-        `SELECT * FROM media_items WHERE tmdb_id = ? AND tmdb_type = ?`,
-        [tmdb_id, tmdb_type],
-        (err, existingItem) => {
-          if (err) {
-            return res.status(500).json({ error: err.message });
-          }
+     if (tmdb_id && tmdb_type) {
+       db.get(
+         `SELECT * FROM media_items WHERE tmdb_id = ? AND tmdb_type = ?`,
+         [tmdb_id, tmdb_type],
+         (err, existingItem) => {
+           if (err) {
+             return res.status(500).json({ error: err.message });
+           }
 
-          if (existingItem) {
-            return res.status(409).json({
-              error: 'This item already exists in the list',
-              existingItem: existingItem
-            });
-          }
+           if (existingItem) {
+             return res.status(409).json({
+               error: 'This item already exists in the list',
+               existingItem: existingItem
+             });
+           }
 
-          insertMediaItem();
-        }
-      );
-    } else {
-      insertMediaItem();
-    }
+           insertMediaItem();
+         }
+       );
+     } else {
+       insertMediaItem();
+     }
 
-    function insertMediaItem() {
-      db.run(
-        `INSERT INTO media_items (title, type, tmdb_id, tmdb_type, poster_path, release_date, overview, rating, runtime)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [title.trim(), type, tmdb_id || null, tmdb_type || null, poster_path || null, release_date || null, overview || null, rating || null, runtime || null],
-        function(err) {
-          if (err) {
-            return res.status(500).json({ error: err.message });
-          }
-          res.json({
-            id: this.lastID,
-            title: title.trim(),
-            type,
-            tmdb_id: tmdb_id || null,
-            tmdb_type: tmdb_type || null,
-            poster_path: poster_path || null,
-            release_date: release_date || null,
-            overview: overview || null,
-            rating: rating || null,
-            runtime: runtime || null,
-            created_at: new Date().toISOString()
-          });
-        }
-      );
-    }
-  });
+     function insertMediaItem() {
+       db.run(
+         `INSERT INTO media_items (title, type, tmdb_id, tmdb_type, poster_path, release_date, overview, rating, runtime, genres)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         [
+           title.trim(),
+           type,
+           tmdb_id || null,
+           tmdb_type || null,
+           poster_path || null,
+           release_date || null,
+           overview || null,
+           rating || null,
+           runtime || null,
+           genres ? JSON.stringify(genres) : null
+         ],
+         function(err) {
+           if (err) {
+             return res.status(500).json({ error: err.message });
+           }
+           res.json({
+             id: this.lastID,
+             title: title.trim(),
+             type,
+             tmdb_id: tmdb_id || null,
+             tmdb_type: tmdb_type || null,
+             poster_path: poster_path || null,
+             release_date: release_date || null,
+             overview: overview || null,
+             rating: rating || null,
+             runtime: runtime || null,
+             genres: genres || null,
+             created_at: new Date().toISOString()
+           });
+         }
+       );
+     }
+   });
 
   app.delete('/api/media/:mediaId', (req, res) => {
     const { mediaId } = req.params;
@@ -473,55 +495,143 @@ initDatabase((err) => {
     );
   });
 
-  app.post('/api/media/filter', requireAuth, (req, res) => {
-    const userId = req.user.userId;
-    const { watchStatus } = req.body;
+    app.post('/api/media/filter', requireAuth, (req, res) => {
+      const { userIds = [], watchStatus, type, genres, runtimeMin, runtimeMax } = req.body;
 
-    const db = getDb();
-    const placeholders = '?';
+      const db = getDb();
 
-    let query = `
-      SELECT
-        m.id,
-        m.title,
-        m.type,
-        m.tmdb_id,
-        m.tmdb_type,
-        m.poster_path,
-        m.release_date,
-        m.overview,
-        m.rating,
-        m.created_at,
-        GROUP_CONCAT(u.username) as users,
-        GROUP_CONCAT(ums.watch_status) as watch_statuses,
-        GROUP_CONCAT(ums.seen) as seen_flags
-      FROM media_items m
-      JOIN user_media_status ums ON m.id = ums.media_id
-      JOIN users u ON ums.user_id = u.id
-      WHERE ums.user_id IN (${placeholders})
-    `;
+      if (Array.isArray(userIds) && userIds.length > 0) {
+        const placeholders = userIds.map(() => '?').join(',');
 
-    const params = [userId];
+        let query = `
+          SELECT
+            m.id,
+            m.title,
+            m.type,
+            m.tmdb_id,
+            m.tmdb_type,
+            m.poster_path,
+            m.release_date,
+            m.overview,
+            m.rating,
+            m.runtime,
+            m.genres,
+            m.created_at,
+            GROUP_CONCAT(u.username) as users,
+            GROUP_CONCAT(ums.watch_status) as watch_statuses,
+            GROUP_CONCAT(ums.seen) as seen_flags
+          FROM media_items m
+          JOIN user_media_status ums ON m.id = ums.media_id
+          JOIN users u ON ums.user_id = u.id
+          WHERE ums.user_id IN (${placeholders})
+        `;
 
-    if (watchStatus) {
-      query += ' AND ums.watch_status = ?';
-      params.push(watchStatus);
-    }
+        const params = [...userIds];
 
-    query += `
-      GROUP BY m.id
-      HAVING COUNT(DISTINCT ums.user_id) = ?
-      ORDER BY m.created_at DESC
-    `;
-    params.push(1);
+        if (watchStatus) {
+          query += ' AND ums.watch_status = ?';
+          params.push(watchStatus);
+        }
 
-    db.all(query, params, (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
+        if (type) {
+          query += ' AND m.type = ?';
+          params.push(type);
+        }
+
+        if (runtimeMin !== null && runtimeMin !== undefined && runtimeMin !== '') {
+          query += ' AND m.runtime >= ?';
+          params.push(parseInt(runtimeMin, 10));
+        }
+
+        if (runtimeMax !== null && runtimeMax !== undefined && runtimeMax !== '') {
+          query += ' AND m.runtime <= ?';
+          params.push(parseInt(runtimeMax, 10));
+        }
+
+        if (Array.isArray(genres) && genres.length > 0) {
+          genres.forEach(genre => {
+            query += ' AND m.genres LIKE ?';
+            params.push(`%"${genre}"%`);
+          });
+        }
+
+        query += `
+          GROUP BY m.id
+          HAVING COUNT(DISTINCT ums.user_id) = ?
+          ORDER BY m.created_at DESC
+        `;
+        params.push(userIds.length);
+
+        db.all(query, params, (err, rows) => {
+          if (err) {
+            console.error('Filter query error:', err.message, 'Query:', query);
+            return res.status(500).json({ error: err.message });
+          }
+          const parsedRows = rows.map(row => ({
+            ...row,
+            genres: row.genres ? JSON.parse(row.genres) : []
+          }));
+          res.json(parsedRows);
+        });
+
+      } else {
+        let query = `
+          SELECT
+            m.id,
+            m.title,
+            m.type,
+            m.tmdb_id,
+            m.tmdb_type,
+            m.poster_path,
+            m.release_date,
+            m.overview,
+            m.rating,
+            m.runtime,
+            m.genres,
+            m.created_at
+          FROM media_items m
+          WHERE 1=1
+        `;
+
+        const params = [];
+
+        if (type) {
+          query += ' AND m.type = ?';
+          params.push(type);
+        }
+
+        if (runtimeMin !== null && runtimeMin !== undefined && runtimeMin !== '') {
+          query += ' AND m.runtime >= ?';
+          params.push(parseInt(runtimeMin, 10));
+        }
+
+        if (runtimeMax !== null && runtimeMax !== undefined && runtimeMax !== '') {
+          query += ' AND m.runtime <= ?';
+          params.push(parseInt(runtimeMax, 10));
+        }
+
+        if (Array.isArray(genres) && genres.length > 0) {
+          genres.forEach(genre => {
+            query += ' AND m.genres LIKE ?';
+            params.push(`%"${genre}"%`);
+          });
+        }
+
+        query += ' ORDER BY m.created_at DESC';
+
+        db.all(query, params, (err, rows) => {
+          if (err) {
+            console.error('Filter query error:', err.message);
+            return res.status(500).json({ error: err.message });
+          }
+          const parsedRows = rows.map(row => ({
+            ...row,
+            genres: row.genres ? JSON.parse(row.genres) : []
+          }));
+          res.json(parsedRows);
+        });
       }
-      res.json(rows);
     });
-  });
 
   // Fetch full details from TMDB
   app.get('/api/tmdb/details', async (req, res) => {

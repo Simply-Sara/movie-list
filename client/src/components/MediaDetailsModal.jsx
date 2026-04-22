@@ -118,22 +118,23 @@ function MediaDetailsModal({
         const statusToSet = watchStatus !== undefined ? watchStatus : null
         const seenToSet = seen !== undefined ? seen : false
         
-         // Add the item to the list
-         const addResponse = await fetch('/api/media', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({
-             title: mediaItem.title,
-             type: mediaItem.type,
-             tmdb_id: tmdbId,
-             tmdb_type: mediaItem.tmdb_type,
-             poster_path: mediaItem.poster_path,
-             release_date: mediaItem.release_date,
-             overview: mediaItem.overview,
-             rating: mediaItem.rating,
-             runtime: details?.runtime || mediaItem?.runtime || null
-           })
-         })
+          // Add the item to the list
+          const addResponse = await fetch('/api/media', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: mediaItem.title,
+              type: mediaItem.type,
+              tmdb_id: tmdbId,
+              tmdb_type: mediaItem.tmdb_type,
+              poster_path: mediaItem.poster_path,
+              release_date: mediaItem.release_date,
+              overview: mediaItem.overview,
+              rating: mediaItem.rating,
+              runtime: details?.runtime || mediaItem?.runtime || null,
+              genres: details?.genres || []
+            })
+          })
         
         if (addResponse.status === 409) {
           // Item already exists (race condition), get the existing item

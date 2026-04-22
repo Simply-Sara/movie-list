@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import MediaList from './MediaList'
 import AddMediaForm from './AddMediaForm'
 import FilterPanel from './FilterPanel'
@@ -8,10 +8,19 @@ import Footer from './Footer'
 
 function Dashboard({ currentUser, users, onLogout }) {
   const [mediaItems, setMediaItems] = useState([])
-  const [selectedUsers, setSelectedUsers] = useState([])
   const [filteredItems, setFilteredItems] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
-  const [activeView, setActiveView] = useState('list') // 'list' or 'queue'
+  const [activeView, setActiveView] = useState('list')
+
+  // Consolidated filter state
+  const [filters, setFilters] = useState({
+    userIds: [],
+    watchStatus: null,
+    type: null,
+    genres: [],
+    runtimeMin: '',
+    runtimeMax: ''
+  })
 
   useEffect(() => {
     loadMediaItems()
@@ -24,10 +33,14 @@ function Dashboard({ currentUser, users, onLogout }) {
       .catch(err => console.error('Error loading media:', err))
   }
 
-  const handleFilter = (userIds, watchStatus) => {
-    if (userIds.length === 0) {
-      setFilteredItems(null)
-      return
+  const handleFilter = useCallback(() => {
+    const body = {
+      userIds: filters.userIds,
+      watchStatus: filters.watchStatus || null,
+      type: filters.type || null,
+      genres: filters.genres.length > 0 ? filters.genres : null,
+      runtimeMin: filters.runtimeMin || null,
+      runtimeMax: filters.runtimeMax || null
     }
 
     fetch('/api/media/filter', {
@@ -36,11 +49,49 @@ function Dashboard({ currentUser, users, onLogout }) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
-      body: JSON.stringify({ userIds, watchStatus })
+      body: JSON.stringify(body)
     })
       .then(res => res.json())
       .then(data => setFilteredItems(data))
       .catch(err => console.error('Error filtering media:', err))
+  }, [filters])
+
+  // Trigger filter whenever any filter changes
+  useEffect(() => {
+    handleFilter()
+  }, [handleFilter])
+
+  // Individual filter setters that update state
+  const setUserIds = (userIds) => {
+    setFilters(prev => ({ ...prev, userIds }))
+  }
+
+  const setWatchStatus = (watchStatus) => {
+    setFilters(prev => ({ ...prev, watchStatus }))
+  }
+
+  const setType = (type) => {
+    setFilters(prev => ({ ...prev, type }))
+  }
+
+  const setGenres = (genres) => {
+    setFilters(prev => ({ ...prev, genres }))
+  }
+
+  const setRuntimeRange = (runtimeRange) => {
+    setFilters(prev => ({ ...prev, runtimeMin: runtimeRange.min, runtimeMax: runtimeRange.max }))
+  }
+
+  const handleClearAllFilters = () => {
+    setFilters({
+      userIds: [],
+      watchStatus: null,
+      type: null,
+      genres: [],
+      runtimeMin: '',
+      runtimeMax: ''
+    })
+    setFilteredItems(null)
   }
 
   const displayItems = filteredItems !== null ? filteredItems : mediaItems
@@ -94,18 +145,17 @@ function Dashboard({ currentUser, users, onLogout }) {
               <FilterPanel
                 users={users}
                 currentUser={currentUser}
-                selectedUsers={selectedUsers}
-                onSelectedUsersChange={(userIds) => {
-                  setSelectedUsers(userIds)
-                  handleFilter(userIds, null)
-                }}
-                onWatchStatusFilter={(status) => {
-                  handleFilter(selectedUsers, status)
-                }}
-                onClearFilter={() => {
-                  setSelectedUsers([])
-                  setFilteredItems(null)
-                }}
+                selectedUsers={filters.userIds}
+                onSelectedUsersChange={setUserIds}
+                watchStatusFilter={filters.watchStatus}
+                onWatchStatusFilter={setWatchStatus}
+                typeFilter={filters.type}
+                onTypeFilterChange={setType}
+                selectedGenres={filters.genres}
+                onGenresChange={setGenres}
+                runtimeRange={{ min: filters.runtimeMin, max: filters.runtimeMax }}
+                onRuntimeRangeChange={setRuntimeRange}
+                onClearFilter={handleClearAllFilters}
               />
             </div>
 
