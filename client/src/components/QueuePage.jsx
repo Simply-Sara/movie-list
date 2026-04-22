@@ -148,44 +148,73 @@ function QueuePage({ currentUser, onStatusUpdate }) {
     }
   }
 
-  const handleStatusChange = async (newStatus) => {
-    if (!currentItem) return
+   const handleStatusChange = async (newStatus) => {
+     if (!currentItem) return
 
-    try {
-      await fetch(`/api/media/${currentItem.id}/status`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          userId: currentUser.id,
-          watchStatus: newStatus
-        })
-      })
-      
-      // Reload statuses to update UI
-      await loadItemStatuses(currentItem.id)
-      
-      // Move to next item (or reload queue if at end)
-      if (currentIndex < queueItems.length - 1) {
-        // Move to next item first
-        setCurrentIndex(currentIndex + 1)
-        // Then reload queue in background to update the list
-        handleStatusUpdate()
-      } else {
-        // At the end, reload queue which will reset to index 0
-        await handleStatusUpdate()
-      }
-      
-      if (onStatusUpdate) {
-        onStatusUpdate()
-      }
-    } catch (err) {
-      console.error('Error updating status:', err)
-      alert('Failed to update status')
-    }
-  }
+     try {
+       await fetch(`/api/media/${currentItem.id}/status`, {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${localStorage.getItem('token')}`
+         },
+         body: JSON.stringify({
+           userId: currentUser.id,
+           watchStatus: newStatus
+         })
+       })
+       
+       // Reload statuses to update UI
+       await loadItemStatuses(currentItem.id)
+       
+       // Move to next item (or reload queue if at end)
+       if (currentIndex < queueItems.length - 1) {
+         // Move to next item first
+         setCurrentIndex(currentIndex + 1)
+         // Then reload queue in background to update the list
+         handleStatusUpdate()
+       } else {
+         // At the end, reload queue which will reset to index 0
+         await handleStatusUpdate()
+       }
+       
+       if (onStatusUpdate) {
+         onStatusUpdate()
+       }
+     } catch (err) {
+       console.error('Error updating status:', err)
+       alert('Failed to update status')
+     }
+   }
+
+   const handleSeenToggle = async () => {
+     if (!currentItem) return
+     
+     try {
+       await fetch(`/api/media/${currentItem.id}/status`, {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${localStorage.getItem('token')}`
+         },
+         body: JSON.stringify({
+           userId: currentUser.id,
+           watchStatus: currentUserStatus?.watch_status,
+           seen: currentUserStatus?.seen === 1 ? 0 : 1
+         })
+       })
+       
+       // Reload statuses to update UI
+       await loadItemStatuses(currentItem.id)
+       
+       if (onStatusUpdate) {
+         onStatusUpdate()
+       }
+     } catch (err) {
+       console.error('Error updating seen status:', err)
+       alert('Failed to update status')
+     }
+   }
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
@@ -580,42 +609,16 @@ function QueuePage({ currentUser, onStatusUpdate }) {
                           >
                             Undecided
                           </button>
-                        </div>
-
-                        <div className="mb-4">
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={currentUserStatus?.seen === 1}
-                                onChange={async (e) => {
-                                  if (currentItem) {
-                                    try {
-                                      await fetch(`/api/media/${currentItem.id}/status`, {
-                                        method: 'POST',
-                                        headers: {
-                                          'Content-Type': 'application/json',
-                                          'Authorization': `Bearer ${localStorage.getItem('token')}`
-                                        },
-                                        body: JSON.stringify({
-                                          userId: currentUser.id,
-                                          watchStatus: currentUserStatus?.watch_status,
-                                          seen: e.target.checked ? 1 : 0
-                                        })
-                                      })
-                                      await loadItemStatuses(currentItem.id)
-                                      if (onStatusUpdate) {
-                                        onStatusUpdate()
-                                      }
-                                    } catch (err) {
-                                      console.error('Error updating seen status:', err)
-                                      alert('Failed to update status')
-                                    }
-                                  }
-                                }}
-                              className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
-                            />
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Mark as Seen</span>
-                          </label>
+                          <button
+                            onClick={handleSeenToggle}
+                            className={`px-4 py-2 text-sm rounded transition ${
+                              currentUserStatus?.seen === 1
+                                ? 'bg-blue-600 text-white dark:bg-blue-700'
+                                : 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-300 dark:hover:bg-blue-700'
+                            }`}
+                          >
+                            Mark as Seen
+                          </button>
                         </div>
                       </div>
                     )}

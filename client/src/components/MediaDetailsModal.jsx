@@ -568,66 +568,66 @@ function MediaDetailsModal({
                     <div className="pt-4 border-t dark:border-gray-700">
                       {currentUser && (
                         <div className="space-y-4">
-                          <div>
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">Your Status:</span>
-                            <div className="flex flex-wrap gap-2">
-                              <button
-                                onClick={() => {
-                                  const newStatus = currentUserStatus?.watch_status === 'want_to_watch' ? null : 'want_to_watch'
-                                  updateStatus(newStatus, undefined)
-                                }}
-                                disabled={isUpdating}
-                                className={`px-4 py-2 text-sm rounded transition ${
-                                  currentUserStatus?.watch_status === 'want_to_watch'
-                                    ? 'bg-green-600 text-white dark:bg-green-700'
-                                    : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-800 dark:text-green-300 dark:hover:bg-green-700'
-                                } disabled:opacity-50`}
-                              >
-                                Want to Watch
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const newStatus = currentUserStatus?.watch_status === 'dont_want_to_watch' ? null : 'dont_want_to_watch'
-                                  updateStatus(newStatus, undefined)
-                                }}
-                                disabled={isUpdating}
-                                className={`px-4 py-2 text-sm rounded transition ${
-                                  currentUserStatus?.watch_status === 'dont_want_to_watch'
-                                    ? 'bg-red-600 text-white dark:bg-red-700'
-                                    : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-800 dark:text-red-300 dark:hover:bg-red-700'
-                                } disabled:opacity-50`}
-                              >
-                                Don't Want
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const newStatus = currentUserStatus?.watch_status === 'undecided' ? null : 'undecided'
-                                  updateStatus(newStatus, undefined)
-                                }}
-                                disabled={isUpdating}
-                                className={`px-4 py-2 text-sm rounded transition ${
-                                  currentUserStatus?.watch_status === 'undecided'
-                                    ? 'bg-yellow-600 text-white dark:bg-yellow-700'
-                                    : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-300 dark:hover:bg-yellow-700'
-                                } disabled:opacity-50`}
-                              >
-                                Undecided
-                              </button>
-                            </div>
-                          </div>
-
-                          <div>
-                            <label className="flex items-center gap-2 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={currentUserStatus?.seen === 1}
-                                onChange={(e) => updateStatus(undefined, e.target.checked)}
-                                disabled={isUpdating}
-                                className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
-                              />
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Mark as Seen</span>
-                            </label>
-                          </div>
+                           <div>
+                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">Your Status:</span>
+                             <div className="flex flex-wrap gap-2">
+                               <button
+                                 onClick={() => {
+                                   const newStatus = currentUserStatus?.watch_status === 'want_to_watch' ? null : 'want_to_watch'
+                                   updateStatus(newStatus, undefined)
+                                 }}
+                                 disabled={isUpdating}
+                                 className={`px-4 py-2 text-sm rounded transition ${
+                                   currentUserStatus?.watch_status === 'want_to_watch'
+                                     ? 'bg-green-600 text-white dark:bg-green-700'
+                                     : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-800 dark:text-green-300 dark:hover:bg-green-700'
+                                 } disabled:opacity-50`}
+                               >
+                                 Want to Watch
+                               </button>
+                               <button
+                                 onClick={() => {
+                                   const newStatus = currentUserStatus?.watch_status === 'dont_want_to_watch' ? null : 'dont_want_to_watch'
+                                   updateStatus(newStatus, undefined)
+                                 }}
+                                 disabled={isUpdating}
+                                 className={`px-4 py-2 text-sm rounded transition ${
+                                   currentUserStatus?.watch_status === 'dont_want_to_watch'
+                                     ? 'bg-red-600 text-white dark:bg-red-700'
+                                     : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-800 dark:text-red-300 dark:hover:bg-red-700'
+                                 } disabled:opacity-50`}
+                               >
+                                 Don't Want
+                               </button>
+                               <button
+                                 onClick={() => {
+                                   const newStatus = currentUserStatus?.watch_status === 'undecided' ? null : 'undecided'
+                                   updateStatus(newStatus, undefined)
+                                 }}
+                                 disabled={isUpdating}
+                                 className={`px-4 py-2 text-sm rounded transition ${
+                                   currentUserStatus?.watch_status === 'undecided'
+                                     ? 'bg-yellow-600 text-white dark:bg-yellow-700'
+                                     : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-300 dark:hover:bg-yellow-700'
+                                 } disabled:opacity-50`}
+                               >
+                                 Undecided
+                               </button>
+                               <button
+                                 onClick={() => {
+                                   updateStatus(undefined, !currentUserStatus?.seen)
+                                 }}
+                                 disabled={isUpdating}
+                                 className={`px-4 py-2 text-sm rounded transition ${
+                                   currentUserStatus?.seen === 1
+                                     ? 'bg-blue-600 text-white dark:bg-blue-700'
+                                     : 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-300 dark:hover:bg-blue-700'
+                                 } disabled:opacity-50`}
+                               >
+                                 Mark as Seen
+                               </button>
+                             </div>
+                           </div>
                         </div>
                       )}
                     </div>
