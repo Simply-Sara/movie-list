@@ -286,6 +286,8 @@ function GroupDetailPage({ currentUser, users, onLogout, pendingGroupInvitesCoun
             <GroupInviteManager
               groupId={parseInt(groupId)}
               isAdmin={isAdmin}
+              currentUser={currentUser}
+              members={group.members || []}
               onInviteSent={loadGroup}
               onInviteCancelled={loadGroup}
             />
