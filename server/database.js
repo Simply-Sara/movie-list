@@ -120,13 +120,41 @@ function createTables() {
   db.run(`ALTER TABLE media_items ADD COLUMN overview TEXT`, () => {});
   db.run(`ALTER TABLE media_items ADD COLUMN rating REAL`, () => {});
   
-  // Add skipped column to user_media_status table if it doesn't exist
-  db.run(`ALTER TABLE user_media_status ADD COLUMN skipped INTEGER DEFAULT 0 CHECK(skipped IN (0, 1))`, () => {});
+   // Add skipped column to user_media_status table if it doesn't exist
+   db.run(`ALTER TABLE user_media_status ADD COLUMN skipped INTEGER DEFAULT 0 CHECK(skipped IN (0, 1))`, () => {});
 
-  // Add password columns to users table if they don't exist (for existing installations)
-  db.run(`ALTER TABLE users ADD COLUMN password_hash TEXT`, () => {});
-  db.run(`ALTER TABLE users ADD COLUMN salt TEXT`, () => {});
-}
+   // Add password columns to users table if they don't exist (for existing installations)
+   db.run(`ALTER TABLE users ADD COLUMN password_hash TEXT`, () => {});
+   db.run(`ALTER TABLE users ADD COLUMN salt TEXT`, () => {});
+
+   // Add new columns to users table (with error handling for existing columns)
+   db.run(`ALTER TABLE users ADD COLUMN about_me TEXT`, (err) => {
+     if (err && !err.message.includes('duplicate column')) console.error('Error adding about_me:', err.message);
+   });
+   db.run(`ALTER TABLE users ADD COLUMN profile_visibility TEXT DEFAULT 'public'`, (err) => {
+     if (err && !err.message.includes('duplicate column')) console.error('Error adding profile_visibility:', err.message);
+   });
+   db.run(`ALTER TABLE users ADD COLUMN avatar_url TEXT`, (err) => {
+     if (err && !err.message.includes('duplicate column')) console.error('Error adding avatar_url:', err.message);
+   });
+
+   // Add runtime column to media_items table
+   db.run(`ALTER TABLE media_items ADD COLUMN runtime INTEGER`, (err) => {
+     if (err && !err.message.includes('duplicate column')) console.error('Error adding runtime:', err.message);
+   });
+
+   // Create user_username_history table for audit tracking
+   db.run(`
+     CREATE TABLE IF NOT EXISTS user_username_history (
+       id INTEGER PRIMARY KEY AUTOINCREMENT,
+       user_id INTEGER NOT NULL,
+       old_username TEXT NOT NULL,
+       changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+     )
+   `);
+   db.run(`CREATE INDEX IF NOT EXISTS idx_user_username_history_user_id ON user_username_history(user_id)`, () => {});
+ }
 
 function ensureCaseInsensitiveUsernameUniqueness(callback) {
   // Check for existing case-insensitive duplicates

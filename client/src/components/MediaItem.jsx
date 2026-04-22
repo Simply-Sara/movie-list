@@ -7,7 +7,7 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
   const [imageBaseUrl, setImageBaseUrl] = useState('')
   const [showMarkWatchedModal, setShowMarkWatchedModal] = useState(false)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
-  const currentUserStatus = userStatuses.find(s => s.user_id === currentUser.id)
+  const currentUserStatus = currentUser ? userStatuses.find(s => s.user_id === currentUser.id) : null;
 
   useEffect(() => {
     // Get TMDB image base URL

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
-import Profile from './pages/Profile'
+import PublicProfile from './pages/PublicProfile'
 import Register from './pages/Register'
 
 function App() {
@@ -113,25 +113,15 @@ function App() {
     }
   }, [])
 
-  if (!currentUser) {
-    return (
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login onLogin={handleLogin} users={users} />} />
-          <Route path="/register" element={<Register onRegister={handleRegister} />} />
-        </Routes>
-      </Router>
-    )
-  }
-
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate replace to="/dashboard" />} />
-        <Route path="/dashboard" element={<Dashboard currentUser={currentUser} users={users} onLogout={handleLogout} />}>
-          <Route index element={<Dashboard currentUser={currentUser} users={users} onLogout={handleLogout} />} />
-        </Route>
-        <Route path="/profile" element={<Profile currentUser={currentUser} users={users} onLogout={handleLogout} />} />
+        <Route path="/" element={currentUser ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} users={users} />} />
+        <Route path="/register" element={<Register onRegister={handleRegister} />} />
+        <Route path="/users/:username" element={<PublicProfile currentUser={currentUser} users={users} onLogout={handleLogout} />} />
+        <Route path="/dashboard" element={currentUser ? <Dashboard currentUser={currentUser} users={users} onLogout={handleLogout} /> : <Navigate to="/" replace />} />
+        <Route path="/profile" element={currentUser ? <Navigate to={`/users/${currentUser.username}`} replace /> : <Navigate to="/" replace />} />
+        <Route path="*" element={currentUser ? <Navigate to="/dashboard" replace /> : <Navigate to="/" replace />} />
       </Routes>
     </Router>
   )

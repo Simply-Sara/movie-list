@@ -233,6 +233,7 @@ initDatabase((err) => {
         m.release_date,
         m.overview,
         m.rating,
+        m.runtime,
         m.created_at
       FROM media_items m
       ORDER BY m.created_at DESC
@@ -285,7 +286,7 @@ initDatabase((err) => {
   });
 
   app.post('/api/media', (req, res) => {
-    const { title, type, tmdb_id, tmdb_type, poster_path, release_date, overview, rating } = req.body;
+    const { title, type, tmdb_id, tmdb_type, poster_path, release_date, overview, rating, runtime } = req.body;
     if (!title || title.trim() === '') {
       return res.status(400).json({ error: 'Title is required' });
     }
@@ -320,9 +321,9 @@ initDatabase((err) => {
 
     function insertMediaItem() {
       db.run(
-        `INSERT INTO media_items (title, type, tmdb_id, tmdb_type, poster_path, release_date, overview, rating)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [title.trim(), type, tmdb_id || null, tmdb_type || null, poster_path || null, release_date || null, overview || null, rating || null],
+        `INSERT INTO media_items (title, type, tmdb_id, tmdb_type, poster_path, release_date, overview, rating, runtime)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [title.trim(), type, tmdb_id || null, tmdb_type || null, poster_path || null, release_date || null, overview || null, rating || null, runtime || null],
         function(err) {
           if (err) {
             return res.status(500).json({ error: err.message });
@@ -337,6 +338,7 @@ initDatabase((err) => {
             release_date: release_date || null,
             overview: overview || null,
             rating: rating || null,
+            runtime: runtime || null,
             created_at: new Date().toISOString()
           });
         }
