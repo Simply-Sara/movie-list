@@ -6,7 +6,8 @@ function FriendsList({ friends, onRemoveFriend, loading }) {
   const [removing, setRemoving] = useState(false);
 
   const handleRemoveClick = (e, friendId) => {
-    e.stopPropagation(); // Prevent navigation to profile
+    e.preventDefault();
+    e.stopPropagation();
     setConfirmRemove(friendId);
   };
 
