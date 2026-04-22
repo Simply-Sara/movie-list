@@ -47,26 +47,6 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
 
   const usersWantingToWatch = userStatuses.filter(s => s.watch_status === 'want_to_watch')
 
-  const handleDelete = (e) => {
-    e.stopPropagation() // Prevent opening modal when clicking delete
-    if (!confirm(`Are you sure you want to remove "${item.title}" from the list? This action cannot be undone.`)) {
-      return
-    }
-
-    setIsUpdating(true)
-    fetch(`/api/media/${item.id}`, {
-      method: 'DELETE'
-    })
-      .then(() => {
-        onStatusUpdate()
-      })
-      .catch(err => {
-        console.error('Error deleting media:', err)
-        alert('Failed to delete media item')
-      })
-      .finally(() => setIsUpdating(false))
-  }
-
   const handleCardClick = () => {
     setShowDetailsModal(true)
   }
@@ -131,19 +111,8 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
           </div>
         )}
         
-        <div className="flex-1 p-6 relative">
-          <button
-            onClick={handleDelete}
-            disabled={isUpdating}
-            className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition disabled:opacity-50 z-10"
-            title="Remove this item"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-          
-          <div className="flex justify-between items-start mb-4 pr-8">
+        <div className="flex-1 p-6">
+          <div className="flex justify-between items-start mb-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{item.title}</h3>

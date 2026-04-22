@@ -236,6 +236,9 @@ initDatabase((err) => {
         m.runtime,
         m.created_at
       FROM media_items m
+      INNER JOIN user_media_status ums ON m.id = ums.media_id
+      WHERE ums.watch_status IS NOT NULL OR ums.seen = 1
+      GROUP BY m.id
       ORDER BY m.created_at DESC
     `, (err, rows) => {
       if (err) {
