@@ -6,7 +6,7 @@ import AddFriendSearch from '../components/AddFriendSearch';
 import AppHeader from '../components/AppHeader';
 import Footer from '../components/Footer';
 
-function FriendsPage({ currentUser, onLogout }) {
+function FriendsPage({ currentUser, onLogout, pendingGroupInvitesCount }) {
   const navigate = useNavigate();
   const [friends, setFriends] = useState([]);
   const [incomingRequests, setIncomingRequests] = useState([]);
@@ -217,6 +217,7 @@ function FriendsPage({ currentUser, onLogout }) {
         activeView={null}
         showViewSwitcher
         onViewChange={handleViewChange}
+        pendingInvitesCount={pendingGroupInvitesCount}
       />
 
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">

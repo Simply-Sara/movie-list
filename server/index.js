@@ -124,17 +124,21 @@ initDatabase((err) => {
     return;
   }
 
-  // Auth routes
-  const authRoutes = require('./routes/auth');
-  app.use('/api/auth', authRoutes);
+   // Auth routes
+   const authRoutes = require('./routes/auth');
+   app.use('/api/auth', authRoutes);
 
-   // Users routes
-   const usersRoutes = require('./routes/users');
-   app.use('/api/users', usersRoutes);
+    // Users routes
+    const usersRoutes = require('./routes/users');
+    app.use('/api/users', usersRoutes);
 
-   // Friends routes
-   const friendsRoutes = require('./routes/friends');
-   app.use('/api/friends', requireAuth, friendsRoutes);
+    // Friends routes
+    const friendsRoutes = require('./routes/friends');
+    app.use('/api/friends', requireAuth, friendsRoutes);
+
+    // Groups routes
+    const groupsRoutes = require('./routes/groups');
+    app.use('/api/groups', requireAuth, groupsRoutes);
 
   // Direct user creation endpoint (kept here for backward compatibility)
   const { findUserByUsername } = require('./utils/user');
