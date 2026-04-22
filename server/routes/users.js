@@ -224,15 +224,16 @@ router.get('/username/:username', async (req, res) => {
           return res.status(500).json({ error: 'Failed to fetch stats', code: 'STATS_ERROR' });
         }
 
-        // Fetch user's media with status
-        db.all(`
-          SELECT m.id, m.title, m.type, m.poster_path, m.runtime,
-                 ums.watch_status, ums.seen, ums.skipped
-          FROM user_media_status ums
-          JOIN media_items m ON ums.media_id = m.id
-          WHERE ums.user_id = ?
-          ORDER BY LOWER(m.title) ASC
-        `, [user.id], (mediaErr, media) => {
+         // Fetch user's media with status
+         db.all(`
+           SELECT m.id, m.title, m.type, m.tmdb_id, m.tmdb_type, m.poster_path,
+                  m.release_date, m.overview, m.rating, m.runtime, m.created_at,
+                  ums.watch_status, ums.seen, ums.skipped
+           FROM user_media_status ums
+           JOIN media_items m ON ums.media_id = m.id
+           WHERE ums.user_id = ?
+           ORDER BY LOWER(m.title) ASC
+         `, [user.id], (mediaErr, media) => {
           if (mediaErr) {
             return res.status(500).json({ error: 'Failed to fetch media', code: 'MEDIA_ERROR' });
           }
@@ -308,14 +309,15 @@ router.get('/:userId', async (req, res) => {
           return res.status(500).json({ error: 'Failed to fetch stats', code: 'STATS_ERROR' });
         }
 
-        db.all(`
-          SELECT m.id, m.title, m.type, m.poster_path, m.runtime,
-                 ums.watch_status, ums.seen, ums.skipped
-          FROM user_media_status ums
-          JOIN media_items m ON ums.media_id = m.id
-          WHERE ums.user_id = ?
-          ORDER BY LOWER(m.title) ASC
-        `, [user.id], (mediaErr, media) => {
+         db.all(`
+           SELECT m.id, m.title, m.type, m.tmdb_id, m.tmdb_type, m.poster_path,
+                  m.release_date, m.overview, m.rating, m.runtime, m.created_at,
+                  ums.watch_status, ums.seen, ums.skipped
+           FROM user_media_status ums
+           JOIN media_items m ON ums.media_id = m.id
+           WHERE ums.user_id = ?
+           ORDER BY LOWER(m.title) ASC
+         `, [user.id], (mediaErr, media) => {
           if (mediaErr) {
             return res.status(500).json({ error: 'Failed to fetch media', code: 'MEDIA_ERROR' });
           }
