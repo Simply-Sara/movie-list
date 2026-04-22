@@ -179,72 +179,67 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
               <div className="flex flex-wrap gap-3 items-center">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Your Status:</span>
                 
-                <div className="flex gap-2">
-                  <button
-                    onClick={(e) => {
-                      handleStatusButtonClick(e)
-                      const newStatus = currentUserStatus?.watch_status === 'want_to_watch' ? null : 'want_to_watch'
-                      updateStatus(newStatus, undefined)
-                    }}
-                    disabled={isUpdating}
-                    className={`px-3 py-1 text-sm rounded transition ${
-                      currentUserStatus?.watch_status === 'want_to_watch'
-                        ? 'bg-green-600 text-white'
-                        : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
-                    } disabled:opacity-50`}
-                  >
-                    Want to Watch
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      handleStatusButtonClick(e)
-                      const newStatus = currentUserStatus?.watch_status === 'dont_want_to_watch' ? null : 'dont_want_to_watch'
-                      updateStatus(newStatus, undefined)
-                    }}
-                    disabled={isUpdating}
-                    className={`px-3 py-1 text-sm rounded transition ${
-                      currentUserStatus?.watch_status === 'dont_want_to_watch'
-                        ? 'bg-red-600 text-white'
-                        : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-800 dark:text-red-200 dark:hover:bg-red-700'
-                    } disabled:opacity-50`}
-                  >
-                    Don't Want
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      handleStatusButtonClick(e)
-                      const newStatus = currentUserStatus?.watch_status === 'undecided' ? null : 'undecided'
-                      updateStatus(newStatus, undefined)
-                    }}
-                    disabled={isUpdating}
-                    className={`px-3 py-1 text-sm rounded transition ${
-                      currentUserStatus?.watch_status === 'undecided'
-                        ? 'bg-yellow-600 text-white'
-                        : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-200 dark:hover:bg-yellow-700'
-                    } disabled:opacity-50`}
-                  >
-                    Undecided
-                  </button>
-                </div>
-
-                <div className="ml-auto">
-                  <label 
-                    className="flex items-center gap-2 cursor-pointer"
-                    onClick={handleStatusButtonClick}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={currentUserStatus?.seen === 1}
-                      onChange={(e) => {
-                        e.stopPropagation()
-                        updateStatus(undefined, e.target.checked)
-                      }}
-                      disabled={isUpdating}
-                      className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">Mark as Seen</span>
-                  </label>
-                </div>
+                 <div className="flex gap-2">
+                   <button
+                     onClick={(e) => {
+                       handleStatusButtonClick(e)
+                       const newStatus = currentUserStatus?.watch_status === 'want_to_watch' ? null : 'want_to_watch'
+                       updateStatus(newStatus, undefined)
+                     }}
+                     disabled={isUpdating}
+                     className={`px-3 py-1 text-sm rounded transition ${
+                       currentUserStatus?.watch_status === 'want_to_watch'
+                         ? 'bg-green-600 text-white'
+                         : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+                     } disabled:opacity-50`}
+                   >
+                     Want to Watch
+                   </button>
+                   <button
+                     onClick={(e) => {
+                       handleStatusButtonClick(e)
+                       const newStatus = currentUserStatus?.watch_status === 'dont_want_to_watch' ? null : 'dont_want_to_watch'
+                       updateStatus(newStatus, undefined)
+                     }}
+                     disabled={isUpdating}
+                     className={`px-3 py-1 text-sm rounded transition ${
+                       currentUserStatus?.watch_status === 'dont_want_to_watch'
+                         ? 'bg-red-600 text-white'
+                         : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-800 dark:text-red-200 dark:hover:bg-red-700'
+                     } disabled:opacity-50`}
+                   >
+                     Don't Want
+                   </button>
+                   <button
+                     onClick={(e) => {
+                       handleStatusButtonClick(e)
+                       const newStatus = currentUserStatus?.watch_status === 'undecided' ? null : 'undecided'
+                       updateStatus(newStatus, undefined)
+                     }}
+                     disabled={isUpdating}
+                     className={`px-3 py-1 text-sm rounded transition ${
+                       currentUserStatus?.watch_status === 'undecided'
+                         ? 'bg-yellow-600 text-white'
+                         : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-200 dark:hover:bg-yellow-700'
+                     } disabled:opacity-50`}
+                   >
+                     Undecided
+                   </button>
+                   <button
+                     onClick={(e) => {
+                       handleStatusButtonClick(e)
+                       updateStatus(undefined, !currentUserStatus?.seen)
+                     }}
+                     disabled={isUpdating}
+                     className={`px-3 py-1 text-sm rounded transition ${
+                       currentUserStatus?.seen === 1
+                         ? 'bg-blue-600 text-white'
+                         : 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                     } disabled:opacity-50`}
+                   >
+                     Mark as Seen
+                   </button>
+                 </div>
               </div>
             ) : (
               <p className="text-sm text-gray-500 dark:text-gray-400">
