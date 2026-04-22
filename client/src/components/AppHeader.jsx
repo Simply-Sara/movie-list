@@ -10,7 +10,9 @@ function AppHeader({ currentUser, onLogout, activeView, onViewChange, showViewSw
           <div className="flex items-center gap-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Movie List</h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Welcome, {currentUser.username}!</p>
+              {currentUser && (
+                <p className="text-sm text-gray-600 dark:text-gray-400">Welcome, {currentUser.username}!</p>
+              )}
             </div>
 
           {/* View Switcher (only on Dashboard) */}
@@ -43,18 +45,29 @@ function AppHeader({ currentUser, onLogout, activeView, onViewChange, showViewSw
           {/* Right side controls */}
           <div className="flex gap-3 items-center">
             <DarkModeToggle size="md" />
-            <Link
-              to={`/users/${currentUser.username}`}
-              className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
-            >
-              Profile
-            </Link>
-            <button
-              onClick={onLogout}
-              className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
-            >
-              Logout
-            </button>
+            {currentUser ? (
+              <>
+                <Link
+                  to={`/users/${currentUser.username}`}
+                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={onLogout}
+                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/"
+                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </div>

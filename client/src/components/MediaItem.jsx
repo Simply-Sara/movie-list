@@ -17,24 +17,25 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
       .catch(err => console.error('Error loading TMDB config:', err))
   }, [])
 
-  const updateStatus = (watchStatus, seen) => {
-    setIsUpdating(true)
-    // Handle null watchStatus (clearing status) - use !== undefined to allow null
-    const statusToSet = watchStatus !== undefined ? watchStatus : (currentUserStatus?.watch_status || null)
-    const seenToSet = seen !== undefined ? (seen ? 1 : 0) : (currentUserStatus?.seen || 0)
+   const updateStatus = (watchStatus, seen) => {
+     if (!currentUser) return
+     setIsUpdating(true)
+     // Handle null watchStatus (clearing status) - use !== undefined to allow null
+     const statusToSet = watchStatus !== undefined ? watchStatus : (currentUserStatus?.watch_status || null)
+     const seenToSet = seen !== undefined ? (seen ? 1 : 0) : (currentUserStatus?.seen || 0)
 
-    fetch(`/api/media/${item.id}/status`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({
-        userId: currentUser.id,
-        watchStatus: statusToSet, // Can be null to clear status
-        seen: seenToSet
-      })
-    })
+     fetch(`/api/media/${item.id}/status`, {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json',
+         'Authorization': `Bearer ${localStorage.getItem('token')}`
+       },
+       body: JSON.stringify({
+         userId: currentUser.id,
+         watchStatus: statusToSet, // Can be null to clear status
+         seen: seenToSet
+       })
+     })
       .then(() => {
         onStatusUpdate()
       })
@@ -156,92 +157,100 @@ function MediaItem({ item, currentUser, userStatuses, users, onStatusUpdate }) {
                   ))}
               </div>
 
-              <div className="mb-4">
-                <button
-                  onClick={handleMarkWatchedClick}
-                  disabled={isUpdating}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50 dark:focus:ring-offset-gray-900"
-                >
-                  ✓ Mark as Watched
-                  {usersWantingToWatch.length > 0 && (
-                    <span className="ml-2">({usersWantingToWatch.length} {usersWantingToWatch.length === 1 ? 'person' : 'people'} want to watch)</span>
-                  )}
-                </button>
-              </div>
+               {currentUser && (
+                 <div className="mb-4">
+                   <button
+                     onClick={handleMarkWatchedClick}
+                     disabled={isUpdating}
+                     className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50 dark:focus:ring-offset-gray-900"
+                   >
+                     ✓ Mark as Watched
+                     {usersWantingToWatch.length > 0 && (
+                       <span className="ml-2">({usersWantingToWatch.length} {usersWantingToWatch.length === 1 ? 'person' : 'people'} want to watch)</span>
+                     )}
+                   </button>
+                 </div>
+               )}
             </div>
           </div>
 
           <div className="border-t pt-4 mt-4 dark:border-gray-700">
-            <div className="flex flex-wrap gap-3 items-center">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Your Status:</span>
-              
-              <div className="flex gap-2">
-                <button
-                  onClick={(e) => {
-                    handleStatusButtonClick(e)
-                    const newStatus = currentUserStatus?.watch_status === 'want_to_watch' ? null : 'want_to_watch'
-                    updateStatus(newStatus, undefined)
-                  }}
-                  disabled={isUpdating}
-                  className={`px-3 py-1 text-sm rounded transition ${
-                    currentUserStatus?.watch_status === 'want_to_watch'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
-                  } disabled:opacity-50`}
-                >
-                  Want to Watch
-                </button>
-                <button
-                  onClick={(e) => {
-                    handleStatusButtonClick(e)
-                    const newStatus = currentUserStatus?.watch_status === 'dont_want_to_watch' ? null : 'dont_want_to_watch'
-                    updateStatus(newStatus, undefined)
-                  }}
-                  disabled={isUpdating}
-                  className={`px-3 py-1 text-sm rounded transition ${
-                    currentUserStatus?.watch_status === 'dont_want_to_watch'
-                      ? 'bg-red-600 text-white'
-                      : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-800 dark:text-red-200 dark:hover:bg-red-700'
-                  } disabled:opacity-50`}
-                >
-                  Don't Want
-                </button>
-                <button
-                  onClick={(e) => {
-                    handleStatusButtonClick(e)
-                    const newStatus = currentUserStatus?.watch_status === 'undecided' ? null : 'undecided'
-                    updateStatus(newStatus, undefined)
-                  }}
-                  disabled={isUpdating}
-                  className={`px-3 py-1 text-sm rounded transition ${
-                    currentUserStatus?.watch_status === 'undecided'
-                      ? 'bg-yellow-600 text-white'
-                      : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-200 dark:hover:bg-yellow-700'
-                  } disabled:opacity-50`}
-                >
-                  Undecided
-                </button>
-              </div>
-
-              <div className="ml-auto">
-                <label 
-                  className="flex items-center gap-2 cursor-pointer"
-                  onClick={handleStatusButtonClick}
-                >
-                  <input
-                    type="checkbox"
-                    checked={currentUserStatus?.seen === 1}
-                    onChange={(e) => {
-                      e.stopPropagation()
-                      updateStatus(undefined, e.target.checked)
+            {currentUser ? (
+              <div className="flex flex-wrap gap-3 items-center">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Your Status:</span>
+                
+                <div className="flex gap-2">
+                  <button
+                    onClick={(e) => {
+                      handleStatusButtonClick(e)
+                      const newStatus = currentUserStatus?.watch_status === 'want_to_watch' ? null : 'want_to_watch'
+                      updateStatus(newStatus, undefined)
                     }}
                     disabled={isUpdating}
-                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">Mark as Seen</span>
-                </label>
+                    className={`px-3 py-1 text-sm rounded transition ${
+                      currentUserStatus?.watch_status === 'want_to_watch'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+                    } disabled:opacity-50`}
+                  >
+                    Want to Watch
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      handleStatusButtonClick(e)
+                      const newStatus = currentUserStatus?.watch_status === 'dont_want_to_watch' ? null : 'dont_want_to_watch'
+                      updateStatus(newStatus, undefined)
+                    }}
+                    disabled={isUpdating}
+                    className={`px-3 py-1 text-sm rounded transition ${
+                      currentUserStatus?.watch_status === 'dont_want_to_watch'
+                        ? 'bg-red-600 text-white'
+                        : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-800 dark:text-red-200 dark:hover:bg-red-700'
+                    } disabled:opacity-50`}
+                  >
+                    Don't Want
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      handleStatusButtonClick(e)
+                      const newStatus = currentUserStatus?.watch_status === 'undecided' ? null : 'undecided'
+                      updateStatus(newStatus, undefined)
+                    }}
+                    disabled={isUpdating}
+                    className={`px-3 py-1 text-sm rounded transition ${
+                      currentUserStatus?.watch_status === 'undecided'
+                        ? 'bg-yellow-600 text-white'
+                        : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-200 dark:hover:bg-yellow-700'
+                    } disabled:opacity-50`}
+                  >
+                    Undecided
+                  </button>
+                </div>
+
+                <div className="ml-auto">
+                  <label 
+                    className="flex items-center gap-2 cursor-pointer"
+                    onClick={handleStatusButtonClick}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={currentUserStatus?.seen === 1}
+                      onChange={(e) => {
+                        e.stopPropagation()
+                        updateStatus(undefined, e.target.checked)
+                      }}
+                      disabled={isUpdating}
+                      className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Mark as Seen</span>
+                  </label>
+                </div>
               </div>
-            </div>
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Log in to track your status
+              </p>
+            )}
           </div>
         </div>
       </div>
