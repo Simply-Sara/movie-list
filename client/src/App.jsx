@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import LandingPage from './pages/LandingPage'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
 import PublicProfile from './pages/PublicProfile'
@@ -145,7 +146,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={currentUser ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} users={users} />} />
+        <Route path="/" element={currentUser ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
+        <Route path="/login" element={currentUser ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} users={users} />} />
         <Route path="/register" element={<Register onRegister={handleRegister} />} />
         <Route path="/friends" element={currentUser ? <FriendsPage currentUser={currentUser} onLogout={handleLogout} pendingGroupInvitesCount={pendingGroupInvitesCount} /> : <Navigate to="/" replace />} />
         <Route path="/groups" element={currentUser ? <GroupsPage currentUser={currentUser} onLogout={handleLogout} pendingGroupInvitesCount={pendingGroupInvitesCount} /> : <Navigate to="/" replace />} />

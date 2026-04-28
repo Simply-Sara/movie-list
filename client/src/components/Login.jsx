@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import DarkModeToggle from './DarkModeToggle'
 import Footer from './Footer'
 
@@ -101,7 +102,7 @@ function Login({ onLogin, users }) {
           <div className="text-center mt-4">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Don't have an account?{' '}
-              <span className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 cursor-pointer" onClick={() => window.location.href = '/register'}>Register here</span>
+              <Link to="/register" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium">Register here</Link>
             </p>
           </div>
         </div>
