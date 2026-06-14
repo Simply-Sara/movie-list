@@ -810,6 +810,29 @@ initDatabase((err) => {
     );
   });
 
+  // Feedback route
+  app.post('/api/feedback', requireAuth, (req, res) => {
+    const { text } = req.body;
+    const userId = req.user.userId;
+
+    if (!text || text.trim() === '') {
+      return res.status(400).json({ error: 'Feedback text is required' });
+    }
+
+    const db = getDb();
+    db.run(
+      'INSERT INTO feedback (user_id, text) VALUES (?, ?)',
+      [userId, text.trim()],
+      function(err) {
+        if (err) {
+          console.error('Insert feedback error:', err);
+          return res.status(500).json({ error: 'Failed to save feedback' });
+        }
+        res.json({ id: this.lastID });
+      }
+    );
+  });
+
   // Global error handler (must be after all routes)
   app.use((err, req, res, next) => {
     console.error(`[${new Date().toISOString()}]`, err);

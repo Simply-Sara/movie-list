@@ -8,6 +8,7 @@ import Register from './pages/Register'
 import FriendsPage from './pages/FriendsPage'
 import GroupsPage from './pages/GroupsPage'
 import GroupDetailPage from './pages/GroupDetailPage'
+import Feedback from './pages/Feedback'
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null)
@@ -155,6 +156,7 @@ function App() {
         <Route path="/users/:username" element={<PublicProfile currentUser={currentUser} users={users} onLogout={handleLogout} pendingGroupInvitesCount={pendingGroupInvitesCount} />} />
         <Route path="/dashboard" element={currentUser ? <Dashboard currentUser={currentUser} users={users} onLogout={handleLogout} pendingGroupInvitesCount={pendingGroupInvitesCount} /> : <Navigate to="/" replace />} />
         <Route path="/profile" element={currentUser ? <Navigate to={`/users/${currentUser.username}`} replace /> : <Navigate to="/" replace />} />
+        <Route path="/feedback" element={currentUser ? <Feedback currentUser={currentUser} onLogout={handleLogout} pendingGroupInvitesCount={pendingGroupInvitesCount} /> : <Navigate to="/" replace />} />
         <Route path="*" element={currentUser ? <Navigate to="/dashboard" replace /> : <Navigate to="/" replace />} />
       </Routes>
     </Router>

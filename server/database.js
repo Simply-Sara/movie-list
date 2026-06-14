@@ -242,6 +242,18 @@ function createTables() {
       db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_user_id ON user_media_status(user_id)`, () => {});
       db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_media_id ON user_media_status(media_id)`, () => {});
       db.run(`CREATE INDEX IF NOT EXISTS idx_user_media_status_watch_status ON user_media_status(watch_status)`, () => {});
+
+      // Feedback table
+      db.run(`
+        CREATE TABLE IF NOT EXISTS feedback (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          text TEXT NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `);
+      db.run(`CREATE INDEX IF NOT EXISTS idx_feedback_user_id ON feedback(user_id)`, () => {});
   }
 
 function ensureCaseInsensitiveUsernameUniqueness(callback) {
