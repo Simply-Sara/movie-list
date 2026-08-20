@@ -21,19 +21,19 @@ function AppHeader({ currentUser, onLogout, activeView, onViewChange, showViewSw
           </div>
 
           {/* Right side controls */}
-          <div className="flex gap-3 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
             <DarkModeToggle size="md" />
             {currentUser ? (
               <>
                 <Link
                   to="/friends"
-                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                   Friends
                 </Link>
                 <Link
                   to="/groups"
-                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700 relative"
+                  className="px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700 relative"
                 >
                   Groups
                   {pendingInvitesCount > 0 && (
@@ -44,13 +44,13 @@ function AppHeader({ currentUser, onLogout, activeView, onViewChange, showViewSw
                 </Link>
                 <Link
                   to={`/users/${currentUser.username}`}
-                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                   Profile
                 </Link>
                 <button
                   onClick={onLogout}
-                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                   Logout
                 </button>
@@ -58,7 +58,7 @@ function AppHeader({ currentUser, onLogout, activeView, onViewChange, showViewSw
             ) : (
               <Link
                 to="/"
-                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
+                className="px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Login
               </Link>
